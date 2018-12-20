@@ -1,0 +1,104 @@
+\documentclass{ctuthesis}
+
+
+
+\ctusetup{
+xdoctype = B,
+xfaculty = F3,
+mainlanguage = english,
+titlelanguage = czech,
+title-english = {Finite Automata Drawing Platform},
+title-czech = {Platforma pro kreslení diagramů konečných automatů},
+department-english = {Department of Cybernetics},
+department-czech = {Katedra kybernetiky},
+author = {Tomáš Hořovský},
+supervisor = {RNDr. Marko Genyk-Berezovskyj},
+supervisor-address = {TODO: FILL},
+month = 1,
+year = 2019,
+specification-file = zadani.pdf,
+}
+
+\ctuprocess
+
+\begin{abstract-english}
+We develop \ldots
+\end{abstract-english}
+
+\begin{abstract-czech}
+Rozvíjíme \ldots
+\end{abstract-czech}
+
+\begin{thanks}
+I thank to my family and my supervisor for support in dire times. \ldots
+TODO: FILL
+\end{thanks}
+
+\begin{declaration}
+Prohlašuji, že jsem předloženou práci vypracoval samostatně a že jsem uvedl
+veškeré použité informační zdroje v souladu s Metodickým pokynem o
+dodržování etických principů při přípravě vysokoškolských závěrečných prací. \\
+TODO: EDIT/FILL
+\end{declaration}
+
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+\maketitle
+
+\chapter{Introduction}
+TODO: FILL
+
+
+\chapter{Motivation and the rest of the world}
+When I wrote my own material for Automata, Grammars and Language theory, I stumbled upon the problem of visualising automata in the document. I wanted fast and reliable way to draw automaton diagrams in place in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{tikz}. Tikz is a powerful image drawing library that has many features. I tried drawing automaton directly with tikz, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for tikz called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely, while keeping the code simple and clear. 
+
+Next problem on the line was to draw these diagrams, so that they are as simple as possible. Mostly eliminating crossing edges did the trick. However the more complex the diagram got, the harder it was to do by hand. I used \textit{Graphviz} to do the layout work for me. Then it was all about the process of converting Graphviz output to the tikz code.
+
+TODO: CONTINUE
+
+\chapter{User manual}
+TODO: FILL
+
+\chapter{Details of Implementation}
+TODO: FILL
+
+\chapter{Drawing images details}
+TODO: FILL
+
+\chapter{Examples of usage, practice, problems of testing}
+
+TODO: FILL
+
+\chapter{What to do next? Looking to the future}
+TODO: FILL
+
+
+\chapter{Conclusion}
+Lorep ipsum \cite{doe}
+
+\begin{thebibliography}{1}
+\bibitem{doe} J. Doe. \emph{Book on foobar.} Publisher X,
+2300.
+\end{thebibliography}
+
+\end{document}
+
+%\begin{figure}
+%\includegraphics[width=0.8\linewidth]{mygraphicfile.pdf}
+%\caption{We depict a foo-bar here.}
+%\label{fig:foobar}
+%\end{figure}
+
+%\begin{table}
+%\begin{ctucolortab}
+%\begin{tabular}{cc}
+%\bfseries Foo & \bfseries Bar \\\Midrule
+%foo1 & bar1 \\
+%foo2 & bar2
+%\end{tabular}
+%\end{ctucolortab}
+%\caption{Table of foo-bar.}
+%\label{tab:foobar}
+%\end{table}

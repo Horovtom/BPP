@@ -48,6 +48,9 @@ TODO: EDIT/FILL
 \maketitle
 
 \chapter{Introduction}
+The goal of this project was to develop new coding language for description of automata and operations with them, implement interactive shell interface for executing the commands. The language operates the \textbf{jautomata} library and implements export of automata to various output formats including \LaTeX code to display the automaton. 
+
+It uses tools such as \textbf{Graphviz} (TODO: LINK) or \textbf{graphviz-java} (TODO: LINK) library. 
 TODO: FILL
 
 
@@ -55,6 +58,10 @@ TODO: FILL
 When I wrote my own material for Automata, Grammars and Language theory, I stumbled upon the problem of visualising automata in the document. I wanted fast and reliable way to draw automaton diagrams in place in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{tikz}. Tikz is a powerful image drawing library that has many features. I tried drawing automaton directly with tikz, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for tikz called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely, while keeping the code simple and clear. 
 
 Next problem on the line was to draw these diagrams, so that they are as simple as possible. Mostly eliminating crossing edges did the trick. However the more complex the diagram got, the harder it was to do by hand. I used \textit{Graphviz} to do the layout work for me. Then it was all about the process of converting Graphviz output to the tikz code.
+
+Automata have a few common operations associated with them. These include reduction, deciding whether $w \in L$, constructing automaton that accepts language $L = L_1 \cup L_2$ or even automaton that accepts $L^*$. I decided to create a library that would implement all of these operations and more. There are libraries that can do these operations (TODO: \href{https://gitlab.fit.cvut.cz/algorithms-library-toolkit/automata-library/}{Algorithms Library Toolkit}), but they are complicated to use and they can not output directly to \LaTeX code. 
+
+Goal of this project is to write a program that would implement intuitive command line interface for operating my jautomata library that contains most of the commonly-used algorithms for working with automata. It would also allow the user to convert automata to various output formats including \LaTeX code.
 
 TODO: CONTINUE
 
@@ -64,7 +71,7 @@ TODO: FILL
 \chapter{Details of Implementation}
 TODO: FILL
 
-\chapter{Drawing images details}
+\chapter{Drawing images - details}
 TODO: FILL
 
 \chapter{Examples of usage, practice, problems of testing}

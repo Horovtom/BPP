@@ -1,6 +1,38 @@
 \documentclass{ctuthesis}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{multicol}
 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{variablesColor}{rgb}{0.66,0.46,0}
 
+\lstdefinelanguage{JASL}{
+    morekeywords={DFA, NFA, ENFA, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong},
+    sensitive=true, % keywords are case-sensitive
+    morecomment=[l]{\%}, % l is for line comment
+    morestring=[b]", % defines that strings are enclosed in double quotes
+    moredelim=[is][\color{variablesColor}]{|}{|},
+    basicstyle=\ttfamily,
+} %
+
+\lstset{frame=tb,
+  language=JASL,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
 
 \ctusetup{
 xdoctype = B,
@@ -57,7 +89,7 @@ TODO: FILL
 \chapter{Motivation and the rest of the world}
 When I wrote my own material for Automata, Grammars and Language theory, I stumbled upon the problem of visualising automata in the document. I wanted fast and reliable way to draw automaton diagrams in place in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{tikz}. Tikz is a powerful image drawing library that has many features. I tried drawing automaton directly with tikz, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for tikz called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely, while keeping the code simple and clear. 
 
-Next problem on the line was to draw these diagrams, so that they are as simple as possible. Mostly eliminating crossing edges did the trick. However the more complex the diagram got, the harder it was to do by hand. I used \textit{Graphviz} to do the layout work for me. Then it was all about the process of converting Graphviz output to the tikz code.
+Next problem on the line was to draw these diagrams, so that they are as simple as possible. Mostly eliminating crossing edges did the trick. However the more complex the diagram got, the harder it was to eliminate those by hand. I used \textit{Graphviz} to do the layout work for me. Then it was all about the process of converting Graphviz output to the tikz code.
 
 Automata have a few common operations associated with them. These include reduction, deciding whether $w \in L$, constructing automaton that accepts language $L = L_1 \cup L_2$ or even automaton that accepts $L^*$. I decided to create a library that would implement all of these operations and more. There are libraries that can do these operations (TODO: \href{https://gitlab.fit.cvut.cz/algorithms-library-toolkit/automata-library/}{Algorithms Library Toolkit}), but they are complicated to use and they can not output directly to \LaTeX code. 
 
@@ -66,6 +98,31 @@ Goal of this project is to write a program that would implement intuitive comman
 TODO: CONTINUE
 
 \chapter{User manual}
+\section{Defining a variable}
+Variables are defined as follows:
+\begin{verbatim}
+$variableName = value
+\end{verbatim}
+
+Variable name can be any string that does not contain '$\$$', '$\ $' or '$.$'. Variables can hold objects of these types:
+\begin{itemize}
+	\item string - \verb'$thisIsString = hello world'
+	\item list - \verb'$thisIsList = {a, b, c}'
+	\item automaton - \verb'$thisIsAutomaton = ENFA($args)'
+\end{itemize}
+
+Now we will look at the details of defining lists and automata:
+
+\subsection{Defining lists}
+Lists are enclosed in pairs of curly brackets. Elements are separated by commas. Elements can be any objects or variables. Lists can be empty. They are used for defining automata. Some examples of lists:
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+    TODO: CONTINUE
+\end{lstlisting}
+\end{minipage}
+
+\subsection{Defining automata}
 TODO: FILL
 
 \chapter{Details of Implementation}
@@ -75,7 +132,59 @@ TODO: FILL
 TODO: FILL
 
 \chapter{Examples of usage, practice, problems of testing}
+Here are some examples of usage of the \textbf{JASL} language: 
 
+\section{Defining a NFA automaton}
+Suppose we have regular language: 
+\begin{equation*}
+L_1 = \{w \mid w \text{ contains } aba \text{ as substring }\}, L_1 \subseteq \{a, b\}^*
+\end{equation*} 
+We design regular automaton $M$ such that $L(M) = L_1$. Example of such automaton could be this non-deterministic automaton:
+\begin{table}[H]
+\begin{ctucolortab}
+\begin{tabular}{cc|cc}
+\multicolumn{2}{c}{\bfseries $M_1$} & \bfseries $a$ & \bfseries $b$ \\\Midrule
+$\rightarrow$ 	& $0$ & $0,1$ 	& $0$  \\
+				& $1$ & $\emptyset$ 	& $2$  \\
+				& $2$ & $3$		& $\emptyset$  \\
+$\leftarrow$	& $3$ & $3$		& $3$ 
+\end{tabular}
+\end{ctucolortab}
+\caption{Transition table of automaton $M_1$.}
+\label{$M_1$:table}
+\end{table} 
+
+In order to define automaton $M_1$ in JASL language we have to define a few lists: 
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+	|$alphabeth| = {a, b}
+	|$row0|  = {>, 0, {0,1}, 0}
+	|$row1|  = {1, {}, 2}
+	|$row2|  = {2, 3, {}}
+	|$row3|  = {<, 3, 3, 3}
+    
+	% Now we can define an automaton:
+	|$M_1|  = NFA({|$alphabeth|, |$row0|, |$row1|, |$row2|, |$row3|})
+
+	% We can get, whether automaton accepts word bbbbaab:
+	|$accepted| = |$M_1|.accepts(bbbbaab)   
+	% Accepted has value: false 
+	
+	% We can get regular expression describing the language L1:
+	|$reg| = |$M_1|.getRegex()
+	% $reg has value: b*aa*b((bb*aa*b)*)a((a+b)*) 
+
+	% But does this regex really describe language L1? 
+	% This one definitely does:
+	|$regex| = (a+b)*aba(a+b)*
+	|$M_2| = fromRegex($regex)
+	|$M_2|.equals(|$M_1|) 	
+	% Outputs: true
+\end{lstlisting}
+\end{minipage}
+
+Note that we use nested lists for definitions of sets of target states. We can use $\{\}$ to denote $\emptyset$. The output of .getRegex() can be quite complicated. That is because no real regular expression simplifier has been implemented yet.
 TODO: FILL
 
 \chapter{What to do next? Looking to the future}

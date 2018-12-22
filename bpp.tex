@@ -2,6 +2,9 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{multicol}
+\usepackage{tikz}
+\usetikzlibrary{shapes, angles, calc, quotes,arrows,automata, positioning}
+
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -103,7 +106,94 @@ TODO: CONTINUE
 TODO: FILL
 
 \section{Syntax of the language}
-TODO: FILL
+The \textbf{JASL} language allows the user to define variables and call functions upon those variables. The commands are parsed line by line. On every line there is one assignment or a command. 
+
+Function calls consist of the name of the function followed by a comma-separated arguments enclosed in a pair of parentheses.
+
+We can comment JASL code with line comments. Every line comment starts with \textbf{\%} sign. Everything that follows the percent sign will not be parsed and the whole line will be skipped. 
+
+Help for the JASL syntax can be displayed with command \textbf{help} while \textbf{helpLong} prints longer, more detailed version with descriptions of functions. 
+TODO: CHECK AND FILL MBY
+
+\subsection{Functions}
+In this section we will describe in detail the functions that are implemented to JASL syntax.
+
+\subsubsection{fromCSV}
+\begin{verbatim}
+	$automaton = fromCSV(file.csv)
+\end{verbatim}
+
+This function will return new Automaton object, loaded from comma-separated csv file specified in the single argument of this function. The CSV output/input format is specified in greater detail in chapter: TODO.
+
+\subsubsection{getExample}
+\begin{verbatim}
+	$automaton = getExample()
+\end{verbatim}
+
+This function will get example automaton. This automaton is described by table:
+\begin{table}[H]
+\begin{ctucolortab}
+\begin{tabular}{cc|c|c}
+	 & & $a$ & $b$ \\\Midrule
+	$\rightarrow$ & $0$ & $1$ & $2,3$ \\
+	$\rightarrow$ & $1$ & & $1,4$ \\
+	$\leftrightarrow$ & $2$ & & $0$ \\
+	$\leftarrow$ & $3$ & $3$ & $3$ \\
+	 & $4$ & $4$ & $2$ 
+\end{tabular}
+\end{ctucolortab}
+\caption{Transition table of example automaton}
+\label{fig:example_automaton_table}
+\end{table}
+
+And it's state diagram:
+\begin{figure}[H]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick,initial text=$ 	$, scale=0.7]
+	\tikzset{every state/.style={minimum size=0pt}}
+	\node[state, initial, initial where=left] (0) at (4.51,5.46) {$0$};
+	\node[state, initial, initial where=left] (1) at (8.17,0.69) {$1$};
+	\node[state, initial, initial where=above, accepting] (2) at (15.51,4.58) {$2$};
+	\node[state, accepting] (3) at (8.17,9.28) {$3$};
+	\node[state] (4) at (11.84,0.69) {$4$};
+	\path
+		(0)
+
+			edge [bend right = 9] node {$a$} (1)
+			edge [bend left = 26] node {$b$} (2)
+			edge [bend left = 10] node {$b$} (3)
+		(1)
+
+			edge [loop above] node {$b$} (1)
+			edge  node {$b$} (4)
+		(2)
+
+			edge [bend left = 9] node {$b$} (0)
+		(3)
+
+			edge [loop above] node {$a,b$} (3)
+		(4)
+
+			edge [bend right = 6] node {$b$} (2)
+			edge [loop above] node {$a$} (4);
+\end{tikzpicture}
+\caption{State diagram of the example automaton}
+\label{fig:example_automaton_diagram}
+\end{figure}
+
+\subsubsection{fromRegex}
+\begin{verbatim}
+	$automaton = fromRegex(a*b(a+b)*)
+\end{verbatim}
+
+This function will return new Automaton object specified by regular expression passed in as an argument. The regular expression will be in format specified in chapter: TODO.
+
+\subsubsection{getTikzIncludes}
+\label{subsec:getTikzIncludes}
+\begin{verbatim}
+	getTikzIncludes()
+\end{verbatim}
+
+This will output a couple lines of \TeX code includes, needed for the Tikz diagrams to work.
 
 \subsection{Defining a variable}
 Variables are defined as follows:
@@ -188,7 +278,7 @@ $\{3, 3, \{\}\}$ \\\hline
 \end{tabular}
 \end{ctucolortab}
 \caption{Example of conversion of trasition table to list}
-\label{Example conversion}
+\label{fig:example_conversion}
 \end{table}
 
 So the argument to construct this automaton is:
@@ -196,7 +286,7 @@ So the argument to construct this automaton is:
 	{{a,b},{<>,0,{},2},{>,1,0,{1,2}},{<,2,{1,2,3},1},{3,3,{}}}
 \end{verbatim}
 
-The automaton specified by the transition table is a NFA automaton. So we construct this automaton with constructor function of the same name. For clarity we can split the definition of the nested list into multiple list variables. 
+The automaton specified by the transition table is a NFA automaton. So we create this automaton with respective constructor function. For clarity we can split the definition of the nested list into multiple list variables. 
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
@@ -209,7 +299,7 @@ The automaton specified by the transition table is a NFA automaton. So we constr
 	% Now we can define the nested list:
 	|$nestedList| = {|$alphabeth|, |$row0|, |$row1|, |$row2|, |$row3|}
     
-	% Now we can define an automaton:
+	% And now we can define an automaton:
 	|$automaton| = NFA(|$nestedList|)
 \end{lstlisting}
 \end{minipage}
@@ -219,6 +309,103 @@ ENFA automata can have $\varepsilon$-transitions. We mark these as another lette
 \begin{lstlisting}[language = JASL]
 	|$alphabeth| = {eps, a, b}
 \end{lstlisting} 
+
+\subsection{Member functions}
+We can call member functions of objects saved in variables. Member functions are defined for automata objects. We call these member functions like this:
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+	|$result| = |$automaton|.functionName(|$arg1|, |$arg2|)	
+\end{lstlisting}
+\end{minipage} 
+
+Note that we can chain member function calls on one line:
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+	|$reduced| = |$automaton|.reduced()
+	|$reduced|.toPNG(image.png)
+	
+	% Can be written as:
+	|$automaton|.reduced().toPNG(image.png)
+\end{lstlisting}
+\end{minipage}
+
+Now we will list all member functions for automata objects:
+
+\subsubsection{accepts}
+\begin{verbatim}
+	$M.accepts(aabbaab)
+\end{verbatim}
+
+This function returns \textit{true} if automaton $M$ accepts word passed in argument ($w \in L(M)$). It outputs \textit{false} otherwise. The argument of this function can be a string or a list of letters. Note, that if you have an automaton that has letters with more than one character, variant with argument of type string will not work. In that case you need to use list as an argument.
+
+\subsubsection{equals}
+\begin{verbatim}
+	$M1.equals(M2)
+\end{verbatim}
+
+This function returns \textit{true} if $L(M1) = L(M2)$. It outputs \textit{false} otherwise. In other words this function checks, whether two automata accept the same language. 
+
+\subsubsection{reduce}
+\begin{verbatim}
+	$M2 = $M.reduce()
+\end{verbatim}
+
+This function returns reduced automaton $M2$. Note that this function creates a new automaton object, so the original automaton remains unchanged.
+
+\subsubsection{toCSV}
+\begin{verbatim}
+	$M.toCSV(m.csv)
+\end{verbatim}
+
+This function creates/overwrites csv file on path specified by the argument. The csv will contain description of the automaton in format, that is specified in chapter: TODO
+
+\subsubsection{toPNG}
+\begin{verbatim}
+	$M.toPNG(m.png, circo)
+\end{verbatim}
+
+This function creates/overwrites png file on path specified by the argument. The png will contain image of the state diagram of the automaton $M$. 
+
+The second argument to toPNG is optional. It is the layout (engine) that Graphviz will use to organize the graph. When no layout is specified, \textbf{dot} will be used as a default. Possible layouts are: \textbf{circo}, \textbf{neato}, \textbf{dot}.
+
+\subsubsection{toTexTable}
+\begin{verbatim}
+	$M.toTexTable()
+\end{verbatim}
+
+This function will output string containing \TeX code to display the transition table of automaton $M$. 
+
+\subsubsection{toRegex}
+\begin{verbatim}
+	$M.toRegex()
+\end{verbatim}
+
+This function will output regular expression describing language $L = L(M)$. Because no regular expression simplifier is implemented, the output of this function can be quite complicated. Nevertheless, it describes the language $L$.
+
+\subsubsection{toDot}
+\label{subsec:toDot}
+\begin{verbatim}
+	$M.toDot(neato)
+\end{verbatim}
+
+This function will output dot code, that contains description of the automaton state-diagram image. It accepts one, optional argument. The argument is the layout (engine) that Graphviz will use to organize the graph. When no layout is specified, \textbf{dot} will be used as a default. Possible layouts are: \textbf{circo}, \textbf{neato}, \textbf{dot}. 
+
+TODO: THIS IS JUST A COPY OF THE ABOVE TEXT! DEAL WITH IT?
+
+\subsubsection{toSimpleDot}
+\begin{verbatim}
+	$M.toSimpleDot()
+\end{verbatim}
+
+This function will output dot code, that contains description of the automaton state-diagram image. As opposed to toDot~\ref{subsec:toDot}, the dot code will not contain positions of elements, because it has not been run through Graphviz yet. 
+
+\subsubsection{toTikz}
+\begin{verbatim}
+	$M.toTikz(dot)
+\end{verbatim}
+
+This function will output Tikz code to display the state diagram of automaton $M$. It accepts one parameter, that is the layout (engine) graphviz will use to organize the graph. When no layout is specified, \textbf{dot} will be used as a default. Possible layouts are: \textbf{circo}, \textbf{neato}, \textbf{dot}. It is recommended to not specify this argument (hence use dot as an engine), because it will generally output the nicest results. Note that you need to add appropriate includes to your \TeX code. You can get these using getTikzIncludes~\ref{subsec:getTikzIncludes}.
 
 \chapter{Details of Implementation}
 TODO: FILL
@@ -246,7 +433,7 @@ $\leftarrow$	& $3$ & $3$		& $3$
 \end{tabular}
 \end{ctucolortab}
 \caption{Transition table of automaton $M_1$.}
-\label{$M_1$:table}
+\label{fig:examples_NFA_table}
 \end{table} 
 
 In order to define automaton $M_1$ in JASL language we have to define a few lists: 

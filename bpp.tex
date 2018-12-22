@@ -9,12 +9,15 @@
 \definecolor{variablesColor}{rgb}{0.66,0.46,0}
 
 \lstdefinelanguage{JASL}{
-    morekeywords={DFA, NFA, ENFA, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong},
+	keywordstyle=\color{blue},
     sensitive=true, % keywords are case-sensitive
     morecomment=[l]{\%}, % l is for line comment
     morestring=[b]", % defines that strings are enclosed in double quotes
     moredelim=[is][\color{variablesColor}]{|}{|},
     basicstyle=\ttfamily,
+    emph={eps},
+    emphstyle=\color{mauve},
+    morekeywords={DFA, NFA, ENFA, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong},
 } %
 
 \lstset{frame=tb,
@@ -54,12 +57,12 @@ specification-file = zadani.pdf,
 \ctuprocess
 
 \begin{abstract-english}
-We develop \ldots
+The goal of this project was to develop new coding language for description of automata and operations with them, implement interactive shell interface for executing the commands. The language operates the \textbf{jautomata} library and implements export of automata to various output formats including \LaTeX code to display the automaton. 
 \end{abstract-english}
 
-\begin{abstract-czech}
-Rozvíjíme \ldots
-\end{abstract-czech}
+%\begin{abstract-czech}
+%Rozvíjíme \ldots
+%\end{abstract-czech}
 
 \begin{thanks}
 I thank to my family and my supervisor for support in dire times. \ldots
@@ -80,11 +83,9 @@ TODO: EDIT/FILL
 \maketitle
 
 \chapter{Introduction}
-The goal of this project was to develop new coding language for description of automata and operations with them, implement interactive shell interface for executing the commands. The language operates the \textbf{jautomata} library and implements export of automata to various output formats including \LaTeX code to display the automaton. 
-
-It uses tools such as \textbf{Graphviz} (TODO: LINK) or \textbf{graphviz-java} (TODO: LINK) library. 
 TODO: FILL
 
+It uses tools such as \textbf{Graphviz} (TODO: LINK) or \textbf{graphviz-java} (TODO: LINK) library. 
 
 \chapter{Motivation and the rest of the world}
 When I wrote my own material for Automata, Grammars and Language theory, I stumbled upon the problem of visualising automata in the document. I wanted fast and reliable way to draw automaton diagrams in place in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{tikz}. Tikz is a powerful image drawing library that has many features. I tried drawing automaton directly with tikz, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for tikz called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely, while keeping the code simple and clear. 
@@ -98,7 +99,13 @@ Goal of this project is to write a program that would implement intuitive comman
 TODO: CONTINUE
 
 \chapter{User manual}
-\section{Defining a variable}
+\section{Installation}
+TODO: FILL
+
+\section{Syntax of the language}
+TODO: FILL
+
+\subsection{Defining a variable}
 Variables are defined as follows:
 \begin{verbatim}
 $variableName = value
@@ -113,17 +120,105 @@ Variable name can be any string that does not contain '$\$$', '$\ $' or '$.$'. V
 
 Now we will look at the details of defining lists and automata:
 
-\subsection{Defining lists}
-Lists are enclosed in pairs of curly brackets. Elements are separated by commas. Elements can be any objects or variables. Lists can be empty. They are used for defining automata. Some examples of lists:
+\subsubsection{Defining lists}
+Lists are enclosed in pairs of curly brackets. Elements are separated by commas. Elements can be any objects or variables. Lists can be empty and they can be nested. They are used for defining automata. Some examples of lists:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
-    TODO: CONTINUE
+	{a, b, c}
+	{}
+	{a, {b, {}}, c}
+\end{lstlisting}
+\end{minipage}
+TODO: Check and complete
+
+\subsubsection{Defining automata}
+JASL implements these types of automata:
+
+\begin{itemize}
+	\item DFA (deterministic finite automaton)
+	\item NFA (non-deterministic finite automaton)
+	\item ENFA (epsilon non-deterministic finite automaton)
+\end{itemize}
+
+To define an automaton we need to use the constructor function. This function accepts one parameter. This parameter is the transition table of the automaton, enclosed in nested list. Elements of this list are:
+
+\begin{enumerate}
+	\item The alphabeth $\Sigma$ as an ordered list of letters.
+	\item $|Q|$ lists. For every state $q \in Q$ we define a list as such:
+		\begin{enumerate}
+			\item Whether $q$ is an initial state $q \in I$ (denoted by '<') or whether $q$ is a final state $q \in F$ (denoted by '>') or both (denoted by '<>'). If $q \not \in (I \cup F)$, then we can skip this field and not append it to the list whatsoever.
+			\item The name of the state $q$.
+			\item For every letter $l \in \Sigma$ we append a list of target states $q \in Q$.
+		\end{enumerate}
+\end{enumerate}
+
+Basically lists in the definition are the rows of transition table read from left to right, separated by commas.
+
+Example conversion:
+\begin{table}[H]
+\begin{ctucolortab}
+\begin{tabular}{cc|cc}
+	&	& $a$	& $b$ \\\Midrule
+$\leftrightarrow$	& $0$	& $\emptyset$	& $2$ \\
+$\rightarrow$	& $1$ & $0$ & $1,2$ \\
+$\leftarrow$	& $2$ & $1,2,3$ & $1$ \\
+				& $3$ & $3$	& $\emptyset$ 
+\end{tabular}
+\quad
+$\rightarrow$
+\begin{tabular}{|c|c|c|c|}
+\hline
+	&&$a$&$b$ \\
+	$<>$ & $0$ & $\{\}$ & $2$ \\
+	$>$ & $1$ & $0$ & $\{1,2\}$ \\
+	$<$ & $2$ & $\{1,2,3\}$ & $1$ \\
+		& $3$ & $3$ & $\{\}$\\
+		\hline
+\end{tabular}
+\quad 
+$\rightarrow$
+\begin{tabular}{|l|}
+\hline 
+$\{a, b\}$ \\
+$\{<>,0,\{\}, 2\}$ \\
+$\{>,1,0,\{1,2\}\}$ \\
+$\{<,2,\{1,2,3\},1\}$ \\
+$\{3, 3, \{\}\}$ \\\hline
+\end{tabular}
+\end{ctucolortab}
+\caption{Example of conversion of trasition table to list}
+\label{Example conversion}
+\end{table}
+
+So the argument to construct this automaton is:
+\begin{verbatim}
+	{{a,b},{<>,0,{},2},{>,1,0,{1,2}},{<,2,{1,2,3},1},{3,3,{}}}
+\end{verbatim}
+
+The automaton specified by the transition table is a NFA automaton. So we construct this automaton with constructor function of the same name. For clarity we can split the definition of the nested list into multiple list variables. 
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+	|$alphabeth| = {a, b}
+	|$row0|  = {<>,0,{},2}
+	|$row1|  = {>,1,0,{1,2}}
+	|$row2|  = {<,2,{1,2,3},1}
+	|$row3|  = {3,3,{}}
+	
+	% Now we can define the nested list:
+	|$nestedList| = {|$alphabeth|, |$row0|, |$row1|, |$row2|, |$row3|}
+    
+	% Now we can define an automaton:
+	|$automaton| = NFA(|$nestedList|)
 \end{lstlisting}
 \end{minipage}
 
-\subsection{Defining automata}
-TODO: FILL
+\paragraph{Note about ENFA automata}
+ENFA automata can have $\varepsilon$-transitions. We mark these as another letter of the alphabeth. The letter \textbf{eps}. So the alphabeth of ENFA automaton could be:
+\begin{lstlisting}[language = JASL]
+	|$alphabeth| = {eps, a, b}
+\end{lstlisting} 
 
 \chapter{Details of Implementation}
 TODO: FILL

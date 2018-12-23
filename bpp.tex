@@ -417,6 +417,7 @@ TODO: FILL
 Here are some examples of usage of the \textbf{JASL} language: 
 
 \section{Defining a NFA automaton}
+\label{sec:example_NFA}
 Suppose we have regular language: 
 \begin{equation*}
 L_1 = \{w \mid w \text{ contains } aba \text{ as substring }\}, L_1 \subseteq \{a, b\}^*
@@ -427,8 +428,8 @@ We design regular automaton $M$ such that $L(M) = L_1$. Example of such automato
 \begin{tabular}{cc|cc}
 \multicolumn{2}{c}{\bfseries $M_1$} & \bfseries $a$ & \bfseries $b$ \\\Midrule
 $\rightarrow$ 	& $0$ & $0,1$ 	& $0$  \\
-				& $1$ & $\emptyset$ 	& $2$  \\
-				& $2$ & $3$		& $\emptyset$  \\
+				& $1$ &  	& $2$  \\
+				& $2$ & $3$		&  \\
 $\leftarrow$	& $3$ & $3$		& $3$ 
 \end{tabular}
 \end{ctucolortab}
@@ -467,7 +468,116 @@ In order to define automaton $M_1$ in JASL language we have to define a few list
 \end{minipage}
 
 Note that we use nested lists for definitions of sets of target states. We can use $\{\}$ to denote $\emptyset$. The output of .getRegex() can be quite complicated. That is because no real regular expression simplifier has been implemented yet.
-TODO: FILL
+
+\section{Defining an ENFA automaton}
+\label{sec:example_ENFA}
+Suppose we have a ENFA automaton $M_2$ that accepts language L such that:
+\begin{equation*}
+	\underline{r} = a^*+b^*, \hspace{1cm} L_{\underline{r}} = L = L(M_2) 
+\end{equation*}
+Such automaton can be described by this transition table:
+\begin{table}[H]
+\begin{ctucolortab}
+\begin{tabular}{cc|ccc}
+\multicolumn{2}{c}{$M_2$} & $\varepsilon$ & $a$ & $b$ \\\Midrule
+$\rightarrow$ 	& $S$ & $A,B$  \\
+				& $A$ & $F$ 	& $A$  \\
+				& $B$ & $F$		& & $B$ \\
+$\leftarrow$	& $F$ & 		&  
+\end{tabular}
+\end{ctucolortab}
+\caption{Transition table of automaton $M_2$.}
+\label{fig:examples_DFA_table}
+\end{table} 
+
+We can define this automaton in JASL as such:
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+	|$Sigma| = {eps, a, b}
+	% We can even shorten the definition by the last empty transitions
+	|$stateS| = {>, S, {A, B}}
+	|$stateA| = {A, F, A}
+	|$stateB| = {B, F, {}, B}
+	|$stateF| = {<, F}
+	|$M_2| = ENFA({|$Sigma|, |$stateS|, |$stateA|, |$stateB|, |$stateF|})
+	
+	% Now we can save png image of automaton M_2:
+	|$M_2|.toPNG(image.png)	
+\end{lstlisting}
+\end{minipage}
+
+The resulting image is:
+
+\begin{figure}[H]
+\includegraphics[width=0.8\linewidth]{figures/ENFA_definition.png}
+\caption{Image saved in image.png}
+\label{fig:ENFA_definition_example}
+\end{figure}
+
+\section{Examples of Tikz images}
+Suppose we have automaton $M_3$. This automaton accepts language $L = L(M_3)$. This language is also described by regular expression $\underline{r_2}$. 
+\begin{equation*}
+	\underline{r_2} = (a+b)^*ab^*, \hspace{1cm} L(M_3) = L_{\underline{r_2}} = L
+\end{equation*}
+
+We construct this automaton and create tex file to display it in JASL:
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+	|$a| = fromRegex((a+b)*ab*)
+	% Tex document parts
+	|$class| = \documentclass{article}
+	|$includes| = getTikzIncludes()
+	|$beginning| = \begin{document}
+	|$tikzCode| = |$a|.toTikz()
+	|$end| = \end{document}
+	
+	% Now save these parts to image.tex file
+	|$class|.save(image.tex)
+	|$includes|.save(image.tex)
+	|$beginning|.save(image.tex)
+	|$tikzCode|.save(image.tex)
+	|$end|.save(image.tex)
+\end{lstlisting}
+\end{minipage}
+
+After compiling image.tex file we get this image:
+
+\begin{figure}[H]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick,initial text=$ 	$]
+	\tikzset{every state/.style={minimum size=0pt}}
+	\node[state] (0) at (5.97,2.26) {$a0$};
+	\node[state] (1) at (8.54,0.62) {$b1$};
+	\node[state, accepting] (2) at (11.36,3.42) {$a2$};
+	\node[state, accepting] (3) at (14.44,3.42) {$b3$};
+	\node[state, initial, initial where=left] (4) at (3.44,2.26) {$I$};
+	\path
+		(0)
+
+			edge [loop above] node {$a$} (0)
+			edge [bend left = 15] node {$b$} (1)
+			edge [bend right = 1] node {$a$} (2)
+		(1)
+
+			edge [bend left = 20] node {$a$} (0)
+			edge [loop above] node {$b$} (1)
+			edge [bend right = 1] node {$a$} (2)
+		(2)
+
+			edge  node {$b$} (3)
+		(3)
+
+			edge [loop above] node {$b$} (3)
+		(4)
+
+			edge  node {$a$} (0)
+			edge [bend right = 24] node {$b$} (1)
+			edge [bend left = 47] node {$a$} (2);
+\end{tikzpicture}
+\caption{Image in compiled image.pdf file.}
+\label{fig:compilation_tikz_code}
+\end{figure}
 
 \chapter{What to do next? Looking to the future}
 TODO: FILL

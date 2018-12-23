@@ -96,6 +96,10 @@ dodržování etických principů při přípravě vysokoškolských závěrečn
 \maketitle
 
 \chapter{Introduction and motivation}
+This project started as a passion of mine for Automata, where I needed a tool to do simple Automata operations and I kept adding new functionality, until the original jautomata-cpp library was so messy I could not orient in the code very well. After some time of struggling with the code I needed to choose the subject of my bachelor's thesis. It was only natural that I would rewrite the whole library properly. \textbf{jautomata} library was the result. 
+
+\subsection{Motivation}
+
 When I wrote my own material for Automata, Grammars and Language theory, I stumbled upon the problem of visualising automata in the document. I wanted fast and reliable way to draw automaton diagrams in place in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{tikz}. Tikz is a powerful image drawing library that has many features. I tried drawing automaton directly with tikz, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for tikz called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely, while keeping the code simple and clear. 
 
 Next problem on the line was to draw these diagrams, so that they are as simple as possible. Mostly eliminating crossing edges did the trick. However the more complex the diagram got, the harder it was to eliminate those by hand. I used \textit{Graphviz} to do the layout work for me. Then it was all about the process of converting Graphviz output to the tikz code.
@@ -115,8 +119,7 @@ TODO: CONTINUE
 There are two ways of installing this program. You can either download pre-compiled .jar file or compile your own. If you just want to use the program, skip the next section right to the running section~\ref{sec:execution}
 
 \subsection{Compiling JAR yourself}
-If you want to compile it yourself, you have to get source code of the project from repository: https://github.com/horovtom/jautomata %TODO Interactive link
-After, you can install it using Maven and JDK. %TODO Link
+If you want to compile it yourself, you have to get source code of the project from this \href{https://github.com/horovtom/jautomata}{repository}. After, you can install it using Maven and JDK. %TODO Link
 
 Open console in the root directory of the downloaded project and run these commands:
 \begin{verbatim}

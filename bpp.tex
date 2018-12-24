@@ -21,7 +21,7 @@
     emph={eps},
     emphstyle=\color{mauve},
     numbers=left,
-    morekeywords={DFA, NFA, ENFA, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong, getTikzIncludes, union, intersection, kleene, concatenation, complement, execute, renameState, renameLetter},
+    morekeywords={Automaton, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong, getTikzIncludes, union, intersection, kleene, concatenation, complement, execute, renameState, renameLetter},
 } 
 
 \lstdefinelanguage{JASL_snippet}{
@@ -34,7 +34,7 @@
     emph={eps},
     emphstyle=\color{mauve},
     numbers=none,
-    morekeywords={DFA, NFA, ENFA, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong, getTikzIncludes, union, intersection, kleene, concatenation, complement, execute, renameState, renameLetter},
+    morekeywords={Automaton, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong, getTikzIncludes, union, intersection, kleene, concatenation, complement, execute, renameState, renameLetter},
 }
 
 \lstset{frame=tb,
@@ -96,11 +96,11 @@ dodržování etických principů při přípravě vysokoškolských závěrečn
 \maketitle
 
 \chapter{Introduction and motivation}
-This project started as a passion of mine for Automata, where I needed a tool to do simple Automata operations and I kept adding new functionality, until the original jautomata-cpp library was so messy I could not orient in the code very well. After some time of struggling with the code I needed to choose the subject of my bachelor's thesis. It was only natural that I would rewrite the whole library properly. \textbf{jautomata} library was the result. 
+This project started as a passion of mine for Automata, where I needed a tool to do simple Automata operations and I kept adding new functionality, until the original jautomata-cpp library was so messy I could not orient in the code very well. After some time of struggling with the code I needed to choose the subject of my software project and my bachelor's thesis. It was only natural that I would rewrite the whole library properly. \textbf{jautomata} library was the result. In my software project I wrote most of the \textbf{jautomata} library, while in my bachelor's thesis I finished the library and I started working on \textbf{JASL} (Java Automata Syntax Language) and the interpreter for this language. Both jautomata library and JASL interpreter are written in pure object-oriented Java. 
 
 \subsection{Motivation}
 
-When I wrote my own material for Automata, Grammars and Language theory, I stumbled upon the problem of visualising automata in the document. I wanted fast and reliable way to draw automaton diagrams in place in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{tikz}. Tikz is a powerful image drawing library that has many features. I tried drawing automaton directly with tikz, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for tikz called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely, while keeping the code simple and clear. 
+When I wrote my own material for Automata and Grammars, I stumbled upon the problem of visualising automata in the document. I wanted fast and reliable way to draw automaton diagrams in place in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{tikz}. Tikz is a powerful image drawing library that has many features. I tried drawing automaton directly with tikz, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for tikz called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely, while keeping the code simple and clear. 
 
 Next problem on the line was to draw these diagrams, so that they are as simple as possible. Mostly eliminating crossing edges did the trick. However the more complex the diagram got, the harder it was to eliminate those by hand. I used \textit{Graphviz} to do the layout work for me. Then it was all about the process of converting Graphviz output to the tikz code.
 
@@ -116,7 +116,7 @@ TODO: CONTINUE
 
 \chapter{User manual}
 \section{Installation}
-There are two ways of installing this program. You can either download pre-compiled .jar file or compile your own. If you just want to use the program, skip the next section right to the running section~\ref{sec:execution}
+There are two ways of installing this program. You can either download pre-compiled .jar file or compile it on your own. If you just want to use the pre-compiled jar, skip right to the running section~\ref{sec:execution}
 
 \subsection{Compiling JAR yourself}
 If you want to compile it yourself, you have to get source code of the project from this \href{https://github.com/horovtom/jautomata}{repository}. After, you can install it using Maven and JDK. %TODO Link
@@ -253,7 +253,7 @@ Variable name can be any string that does not contain '$\$$', '$\ $' or '$.$'. V
 \begin{itemize}
 	\item string - \verb'$thisIsString = hello world'
 	\item list - \verb'$thisIsList = {a, b, c}'
-	\item automaton - \verb'$thisIsAutomaton = ENFA($args)'
+	\item automaton - \verb'$thisIsAutomaton = Automaton($args)'
 \end{itemize}
 
 Now we will look at the details of defining lists and automata:
@@ -271,14 +271,6 @@ Lists are enclosed in pairs of curly brackets. Elements are separated by commas.
 TODO: Check and complete
 
 \subsubsection{Defining automata}
-JASL implements these types of automata:
-
-\begin{itemize}
-	\item DFA (deterministic finite automaton)
-	\item NFA (non-deterministic finite automaton)
-	\item ENFA (epsilon non-deterministic finite automaton)
-\end{itemize}
-
 To define an automaton we need to use the constructor function. This function accepts one parameter. This parameter is the transition table of the automaton, enclosed in nested list. Elements of this list are:
 
 \begin{enumerate}
@@ -334,7 +326,7 @@ So the argument to construct this automaton is:
 	{{a,b},{<>,0,{},2},{>,1,0,{1,2}},{<,2,{1,2,3},1},{3,3,{}}}
 \end{lstlisting}
 
-The automaton specified by the transition table is a NFA automaton. So we create this automaton with respective constructor function. For clarity we can split the definition of the nested list into multiple list variables. 
+The automaton specified by the transition table is NFA automaton. We can create this automaton object using the Automaton constructor. For clarity we can split the definition of the nested list into multiple list variables. 
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
@@ -348,7 +340,7 @@ The automaton specified by the transition table is a NFA automaton. So we create
 	|$nestedList| = {|$alphabeth|, |$row0|, |$row1|, |$row2|, |$row3|}
     
 	% And now we can define an automaton:
-	|$automaton| = NFA(|$nestedList|)
+	|$automaton| = Automaton(|$nestedList|)
 \end{lstlisting}
 \end{minipage}
 
@@ -519,13 +511,79 @@ This function accepts two arguments. The old state name as first and the new one
 	|$M1|.renameLetter(a, css)
 \end{lstlisting}
 
-This function accepts two arguments. The old letter name as first and the new one as second argument. It will fail if the original letter has not been found in the automaton or if the new name is already taken by some other letter of the automaton.
+This function accepts two arguments. The old letter name as first and the new one as second argument. It will fail if the original letter has not been found in the automaton or if the new name is already taken by some other letter of the automaton. Also you cannot use 'eps' or $\varepsilon$ as a letter because that is a mark of epsilon tranisiton. You cannot use this function to add or remove epsilon transitions from the table.
 
 \chapter{Details of Implementation}
-TODO: FILL
+In this chapter I will describe various details of the implementation and some problems that I found when implementing the application.
+
+\section{Used technology}
+\subsection{JAutomata}
+JASL interpreter needed some backend that would execute algorithms on automata and which would house the automata themself. I developed \textbf{jautomata} library just for this reason. It is a library that allows the user to define automata and execute various operations on them. Because I wrote the library, I had the source code and I could make certain changes to the way the library works. For example I had to fix some bugs that were in the CSV loading code or I had to implement new constructor functions for the Automaton object. I For this reason I decided to work with the code directly and not pack it into separate .jar file. 
+
+The \textbf{jautomata} library was developed by test-driven development. This meant that most of the functionality in the library was already unit-tested so I could rely on the algorithms to work properly. 
+
+\subsubsection{Acceptor object}
+When I wrote the library I encountered an interesting problem with word accepting. Previously I used a function that would use Java objects like HashMaps and Lists to find out if a word was accepted by the automaton. While working on the library I was concerned about the speed of this operation. 
+
+In %TODO ucebnice - algoritmus na prijimani slov
+textbook I found this algorithm: %TODO Cite?
+I implemented this algorithm in AutomatonAcceptor object. Theoretically it should be much faster, because it did not use any objects. Computers generally do bitwise operations very fast, so I thought that this would be much faster than my previous version. I tested both versions on multiple automata and various lengths of words. To my surprise, the operation got actually slower when using the newly implemented algorithm. The object-oriented way was faster even on automata with fewer than 32 states. 
+
+I came to the conclusion that the bitwise algorithm was slower, because of Java's inner workings. This algorithm is much faster when implemented in C++. In the final version of the library I used the object-oriented way.
+
+\subsubsection{Automaton types}
+The jautomata library distinguishes between deterministic, non-deterministic and epsilon non-deterministic Finite Automata. In the library there is an object for each of those types. I originally implemented separate constructor functions for these types to JASL language, but soon I realized that functionally they were indistinguishible from each other. Because of that I refactored the language to have only one constructor function for all automata. Because both NFA and DFA automata are special cases of ENFA automaton, I use ENFA object for all automata defined in JASL except for reduced automata. The user of JASL cannot distinguish between inner types of automaton.
+
+
+\subsection{Graphviz}
+Graphviz is a tool for graph layout \ldots INFO \ldots %TODO Get right info from website
+I used graphviz to organize state diagrams of automata. Graphviz uses dot language to describe graphs. It has several output formats which include png image, plain text or even dot code. User can pass in dot code where only a couple attributes are specified (nodes, edges, colors of edges, \ldots). Graphviz will output dot code with all attributes specified (node position, size, edge anchor points, \ldots).  JASL interpreter uses graphviz to get PNG images and to get layouts for getTikz conversions. Graphviz takes many arguments as to how it should organize the layout. Unfortunately some of those arguments have no effect on the resulting image. Graphviz often ignores some of the arguments to produce better image. That ended being quite problematic for my particular use-case. More about that in section \ref{sec:problems_graphviz}.
+
+\subsection{Graphviz-java library}
+Graphviz-java is a library that parses dot code into objects in Java. I thought that using this library would save me a lot of work on parsing dot code. Graphviz-java is originally meant to be used to construct graphs and then convert them to dot code directly and vice versa. However, I wanted something different from the library. I wanted to use it only for parsing of the dot code. Then I wanted to extract only layout information (x and y coordinates) from the objects. 
+
+Graphviz-java does not have any documentation on its classes or functions. So I had to reverse-engineer most of the fields of the object and their meaning, using java reflection and debugger. Fortunately, I found the attributes in the classes created by graphviz-java and was able to extract them. 
+
+I struggled on one particular bug in Graphviz-java library related to edge anchor poits extraction. If dot code from Graphviz contained any edge, that was long enough to have more than 9 anchor points, it would line-break the dot file in the middle of \textbf{pos} attribute. This caused Graphviz-java to parse it incorrectly. Fixing this issue made me thing if using Graphviz-java was worth it in the first place.
+
+So using graphviz-java for this use-case may not have been the best idea. It might have been easier to get plain text file as an output from Graphviz and parse it myself. 
+
+\subsection{Tikz and automata for tikz}
+Tikz is a library \ldots build on PGF \ldots %TODO: FILL DETAILED
+and it has a library made for drawing automata. This library is very well documented. I have used this library extensively to write my own texts about Automata so I was very familiar with the syntax. I decided to use it as an output platform, because of it being user-friendly and immediately usable in \TeX code to generate images.
+ 
+
+
+
 
 \chapter{Drawing images - details}
-TODO: FILL
+%TODO Some marinade
+
+\section{Problems with Graphviz}
+\label{sec:problems_graphviz}
+Graphviz has many attributes that one can specify in the dot file. User can specify styling of the edges or even positions of nodes. However there are some attributes that Graphviz ignores. Unfortunately these happened to be the most important for JASL. I needed a way to tell graphviz maximum dimensions of the output image. These attributes were in the result dot, but they did not alter the coordinates of the elements. They were in the final dot only as an instruction for the dot-drawing platform on how to scale the resulting image. Graphviz does not have support for aspect ratio of the output layout. As one of the main goals of JASL is to convert automata to Tikz code, I needed to instruct Graphviz to fit graphs to page size.
+
+Graphviz uses internal coordinates for layout in the output dot file, so I needed to convert them to tikz internal coordinates. I measured the maximum feasible width/height of tikz image to fit regular A4 page. I tried using linear mapping, but for that I had to know the bounding box of the dot coordinates. Graphviz has attribute in the output file under \textbf{bb} keyword that should specify the bounding box of the image. Unfortunately this value did not correspond to the maximum coordinate values of elements. The \textbf{bb} argument specified %TODO FILL EXACT
+(bounding box after being scaled by scale attribute, but the values did not match even after scaling the attributes).
+
+My only choice was to calculate the bounding box myself. By doing that I sacrificed the size constraints of the original image. This means that tikz \ldots %TODO FINISH THIS
+
+
+%TODO MARINADE
+Graphviz has three main layout engines that can be used to draw diagrams %TODO CHECK IF IT IS REALLY THREE
+\begin{itemize}
+	\item dot
+	\item neato
+	\item circo
+\end{itemize}
+
+These engines produce vastly different images. I got the best results using dot engine, but for some particular examples I got nicer images with \textbf{circo}. 
+
+
+%TODO MARINADE
+\section{TIKZ}
+Originally I wanted to output tikz code that would be the most easy for the user to edit. Automata library was built to use the \textbf{relation} model. In this model every element of the graph is placed in relation to some other element. \ldots
+
 
 \chapter{Examples of usage, practice, problems of testing}
 Here are some examples of usage of the \textbf{JASL} language: 
@@ -562,7 +620,7 @@ In order to define automaton $M_1$ in JASL language we have to define a few list
 	|$row3|  = {<, 3, 3, 3}
     
 	% Now we can define an automaton:
-	|$M_1|  = NFA({|$alphabeth|, |$row0|, |$row1|, |$row2|, |$row3|})
+	|$M_1|  = Automaton({|$alphabeth|, |$row0|, |$row1|, |$row2|, |$row3|})
 
 	% We can get, whether automaton accepts word bbbbaab:
 	|$accepted| = |$M_1|.accepts(bbbbaab)   
@@ -614,7 +672,7 @@ We can define this automaton in JASL as such:
 	|$stateA| = {A, F, A}
 	|$stateB| = {B, F, {}, B}
 	|$stateF| = {<, F}
-	|$M_2| = ENFA({|$Sigma|, |$stateS|, |$stateA|, |$stateB|, |$stateF|})
+	|$M_2| = Automaton({|$Sigma|, |$stateS|, |$stateA|, |$stateB|, |$stateF|})
 	
 	% Now we can save png image of automaton M_2:
 	|$M_2|.toPNG(image.png)	

@@ -2,7 +2,6 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{multicol}
-%\usepackage{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{shapes, angles, calc, quotes,arrows,automata, positioning}
 
@@ -145,6 +144,7 @@ If switch -f is specified, the program will look for its argument, which should 
 You can execute file from shell, where the interpreter uses variables from current session. This can be done by using execute function~\ref{subsec:execute}. 
 
 \section{Syntax of the language}
+\label{subsec:syntax}
 The \textbf{JASL} language allows you to define variables and call functions upon those variables. The commands are parsed line by line. On every line there is one assignment or a command. 
 
 Function calls consist of the name of the function followed by a comma-separated arguments enclosed in a pair of parentheses.
@@ -545,9 +545,79 @@ Tikz has a library made for drawing automata. This library is very well document
 
 Syntax of the code to draw automata in Tikz is very well described in this tutorial:~\cite{tikz-tut}
 
+\section{Details of implementation}
+This project can be divided into 2 main sections: the interpreter and the convertor. Each of these parts had it's intricacies. In this section I want to focus on those.
+
+\subsection{JASL interpreter}
+Interpreter for JASL language implements three types of statemenets.
+\begin{itemize}
+	\item Assignments
+	\item Expressions
+	\item Commands
+\end{itemize}
+
+There is just a handful of commands available in console interpreter. These are: \textbf{help}, \textbf{helpLong} and \textbf{clear}. These commands are described in more detail in sections \ref{sec:execution} and \ref{subsec:syntax}
+
+Assignments consist of variable name on the left side of the equals operator and some expression on the right side. Expressions consist of function calls, variables and their member functions. If an expression is called by itself, the console will display the result of the evaluation. However if an expression is used as a part of an assignment, it saves the result to the variable and does not output anything to the console. 
+
+I wanted to develop a way to make JASL more compact, so that the scripts do not have to be unnecessarily long and verbose. The first step was to allow in-place constructors. To achieve this I added two features to the interpreter: in-place constructors and member function chaining.
+
+\subsubsection{In-place constructors}
+In-place constructors allow the user to define and immediately use objects in expressions. I solved this by evaluating expressions recursively. For example if a function call is being evaluated, the interpreter splits the function call into $n+1$ parts: function name and it's $n$ arguments. On each of those $n$ arguments the interpreter calls evaluate function again. This allows the user to write condensed code where it is needed. It can also reduce unnecessary variable declarations which could potentially be quite problematic in larger programs.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+	% Code without in-place construction
+	|$automaton1| = fromRegex(a*(b+a))
+	|$exampleAutomaton| = getExample()
+	|$automaton1|.equals(|$exampleAutomaton|)
+	
+	% Code with in-place construction
+	getExample().equals(fromRegex(a*(b+a)))
+\end{lstlisting}
+\end{minipage}
+
+\subsubsection{Member function chaining}
+\label{chaining_impl}
+The second step was to make chaining of member function calls possible. Calling a member function of an object in JASL results in new object. This feature allows the user to call member functions on these resulting objects on the same line as they were defined. Again, this reduces the number of unnecessary variables in the environment.
+
+To do this, the interpreter splits the expression into member function calls and then evaluates them one by one. The actual implementation of this process is rather intriguing. 
+\begin{enumerate}
+	\item Split expression in three parts: variable name \textbf{V}, first member function call \textbf{F} and the rest of the expression \textbf{R}.
+	\item Evaluate \textbf{VF} and save the result in temporary variable \textbf{T}
+	\item Run evaluate on expression \textbf{TR}
+\end{enumerate}
+
+%TODO EXAMPLE?
+
+In each step the interpreter evaluates the front-most function call. Each time it saves the result in temporary variable \textbf{\$TEMP} and removes the first function call from the expression. Then it replaces this function call by \textbf{\$TEMP} and runs the evaluation again on the shortened expression. 
+
+As a side effect it would overwrite \textbf{\$TEMP} variable. As a countermeasure I added a little stack-frame just for this variable. Because the algorithm uses recursion to evaluate chained function calls, I could implement the stack-frame using Java's native stack-frame. This solution was simple to implement, but it has a problem. If one of the member functions has a syntax error in it, the interpreter throws an InvalidSyntaxException and the stack frame will be lost. It is not recommended to use \textbf{\$TEMP} as a variable name. 
+
+The chaining feature was added to the JASL language after the main framework had been completed and this process was the easiest to implement. The way it is implemented is taxing on computation time, because of all the unnecessary variable name parsing and it should be upgraded in the future. 
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = JASL]
+	% Code without chained member function calls
+	|$automaton| = getExample()
+	|$reducedAutomaton| = |$automaton|.reduce()
+	|$tikzCode| = |$reducedAutomaton|.getTikz()
+	|$tikzCode|.save(test.txt)
+	
+	% Code with chained member functions
+	getExample().reduce().toTikz().save(test.txt)
+\end{lstlisting}
+\end{minipage}
+
+
+
+\subsection{Conversion to tikz}
+
 \section{Problems with implementation}
-%TODO FILL
-\ldots TO BE FILLED \ldots
+While implementing JASL I had to solve many problems. Some of these problems were caused by tools I was working with, or syntax checking. 
+
+\subsection{Problems with syntax errors}
+One of the main goals of this project was to create live console environment. There are some libraries for Java that can create such environment, but they do not allow the user to define his own syntax. After searching the internet for a suitable framework, I decided to implement the console environment myself. Due to the nature of live console environment, I needed to handle many exceptions. Exceptions could occurr because of non-existent file, invalid CSV files and syntax errors of the JASL language. Because of this, the code had to have solid exception handling. This turned out to be quite complex.
 
 \subsection{Problems with Graphviz-java}
 \label{subsec:graphviz-java-problems}
@@ -555,7 +625,7 @@ I thought that using this library would save me a lot of work on parsing dot cod
 
 Graphviz-java does not have any documentation on its classes or functions. So I had to reverse-engineer most of the fields of the object and their meaning, using java reflection and debugger. Fortunately, I found the attributes in the classes created by graphviz-java and was able to extract them. 
 
-I struggled on one particular bug in Graphviz-java library related to edge anchor poits extraction. If dot code from Graphviz contained any edge, that was long enough to have more than 9 anchor points, it would line-break the dot file in the middle of \textbf{pos} attribute. This caused Graphviz-java to parse it incorrectly. Fixing this issue made me thing if using Graphviz-java was worth it in the first place.
+I struggled on one particular bug in Graphviz-java library related to edge knot points extraction. If dot code from Graphviz contained any edge, that was long enough to have more than 9 anchor points, it would line-break the dot file in the middle of \textbf{pos} attribute. This caused Graphviz-java to parse it incorrectly. Fixing this issue made me thing if using Graphviz-java was worth it in the first place.
 
 So using graphviz-java for this use-case may not have been the best idea. It might have been easier to get plain text file as an output from Graphviz and parse it myself. 
 

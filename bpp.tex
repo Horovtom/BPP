@@ -11,6 +11,7 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 \definecolor{variablesColor}{rgb}{0.66,0.46,0}
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 \lstdefinelanguage{JASL}{
 	keywordstyle=\color{blue},
@@ -65,7 +66,7 @@ department-english = {Department of Cybernetics},
 department-czech = {Katedra kybernetiky},
 author = {Tomáš Hořovský},
 supervisor = {RNDr. Marko Genyk-Berezovskyj},
-supervisor-address = {TODO: FILL},
+supervisor-address = {Praha, Na Zderaze 269/4, room: G-9},
 month = 1,
 year = 2019,
 specification-file = zadani.pdf,
@@ -290,12 +291,13 @@ We can construct the transition table:
 \end{tabular}
 \end{ctucolortab}
 \end{figure}
+
 \chapter{User manual}
 \section{Installation}
 There are two ways of installing this program. You can either download pre-compiled .jar file or compile it on your own. If you just want to use the pre-compiled jar, skip right to the running section~\ref{sec:execution}
 
 \subsection{Compiling JAR yourself}
-If you want to compile it yourself, you have to get source code of the project from this \href{https://github.com/horovtom/jautomata}{repository}. After that, you can install it using \href{https://maven.apache.org/}{Maven} and \href{https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html}{JDK}. %TODO Link
+If you want to compile it yourself, you have to get source code of the project from this \href{https://github.com/horovtom/jautomata}{repository}. After that, you can install it using \href{https://maven.apache.org/}{Maven} and \href{https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html}{JDK}. 
 
 Open console in the root directory of the downloaded project and run these commands:
 \begin{verbatim}
@@ -335,9 +337,9 @@ The \textbf{JASL} language allows you to define variables and call functions upo
 	expression &$\rightarrow$& string | list | functionCall | variable\textcolor{red}{.}memberFCall | variable \\
 	list &$\rightarrow$& \textcolor{red}{\{}listItems\textcolor{red}{\}} | \textcolor{red}{\{}\textcolor{red}{\}} \\
 	listItems &$\rightarrow$& expression | expression\textcolor{red}{,} listItems \\
-	functionCall &$\rightarrow$& functionName\textcolor{red}{(}args\textcolor{red}{)}[memberFCall] \\
+	functionCall &$\rightarrow$& functionName\textcolor{red}{(}[args]\textcolor{red}{)}[memberFCall] \\
 	args &$\rightarrow$& expression[\textcolor{red}{,} args] \\
-	memberFCall &$\rightarrow$& memberFName\textcolor{red}{(}args\textcolor{red}{)}[memberFCall]
+	memberFCall &$\rightarrow$& memberFName\textcolor{red}{(}[args]\textcolor{red}{)}[memberFCall]
 \end{tabular}
 \end{ctucolortab}
 \end{figure}
@@ -472,13 +474,16 @@ And it's state diagram:
 \end{figure}
 
 \subsubsection{fromRegex}
+\label{fromRegex}
 \begin{lstlisting}[language = JASL_snippet]
 	|$automaton| = fromRegex(a*b(a+b)*)
 \end{lstlisting}
 
-Returns new Automaton object specified by regular expression passed in as an argument. The regular expression has to be in format specified in chapter: TODO.
+Returns new Automaton object specified by regular expression passed in as an argument. The regular expression has to be in format specified in chapter~\ref{sec:regex-def} or format described in \ref{toRegex}.
 
-There are limitations of this function. It works only with single character long terminals. Characters can not be escaped, so symbols '\textbf{(}', '\textbf{)}' and '\textbf{*}' can not be used as terminals.
+There are limitations of this function. It works only with single character long terminals. Characters can not be escaped, so symbols '\textbf{(}', '\textbf{)}', '$\mathbf{\cdot}$' and '\textbf{*}' can not be used as terminals. 
+
+To create an automaton from regular expression, the JAutomata library uses a modified version of the algorithm from Melichar~p.86~Algorithm 2.107~\cite{melichar}
 
 \subsubsection{getTikzIncludes}
 \label{subsec:getTikzIncludes}
@@ -496,17 +501,18 @@ These are:
 
 \subsection{Automata}
 \label{subsec:automata-variables}
-To define an automaton you need to use the Automaton function. This function accepts nested list $L = \{l_s, l_1, l_2, \ldots, l_n\}, n = |Q|$ as a single parameter. Elements of list $L$ are:
+To define an automaton you need to use the Automaton function. This function accepts a single parameter: nested list $L = \{l_s, l_1, l_2, \ldots, l_n\}, n = |Q|$, where $Q$ is the set of states of the automaton we want to define.  Elements of list $L$ are:
 \begin{itemize}
-	\item disjunct list of terminals: $l_s = \{t_1, t_2, \ldots, t_k\}, t_i \in \Sigma, i = 1\ldots |\Sigma|$
-	\item n lists where each list $l_i = \{\text{IO}, Q_i, \delta(Q_i, t_1), \delta(Q_i, t_2), \ldots, \delta(Q_i, t_k)\}$, where $IO = 
+	\item disjoint list of terminals: $l_s = \{t_1, t_2, \ldots, t_k\}, t_i \in \Sigma, i = 1\ldots |\Sigma|$
+	\item n lists where each list $l_i = \{\text{IO}, q_i, \delta(q_i, t_1), \delta(q_i, t_2), \ldots, \delta(q_i, t_k)\}$, where each of $\delta(q_i, t_j)$ is a list of target states and $IO$ is defined as: 
+ 	
+	$IO = 
 		\begin{cases}
-			\text{<>,} &\quad\text{if }Q_i \in F, Q_i \in I \\
-			\text{<,} &\quad\text{if }Q_i \in F\\
-			\text{>,} &\quad\text{if }Q_i \in I \\
+			\text{<>,} &\quad\text{if }q_i \in F, Q_i \in I \\
+			\text{<,} &\quad\text{if }q_i \in F\\
+			\text{>,} &\quad\text{if }q_i \in I \\
 			\text{empty string,} &\quad\text{otherwise}\\
 		\end{cases}$
-		and each of $\delta(Q_i, t_j)$ is a list of target states.
 \end{itemize}
 
 In other words this parameter is the transition table of the automaton. Lists in the definition are the rows of transition table read from left to right, separated by commas.
@@ -543,7 +549,7 @@ $\{<,2,\{1,2,3\},1\}$ \\
 $\{3, 3, \{\}\}$ \\\hline
 \end{tabular}
 \end{ctucolortab}
-\caption{Example of conversion of trasition table to list}
+\caption{Example of conversion of transition table to list}
 \label{fig:example_conversion}
 \end{table}
 
@@ -582,7 +588,10 @@ Member function (method) is a function called on an object saved in a variable. 
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL_snippet]
-	|$result| = |$automaton|.functionName(|$arg1|, |$arg2|)	
+	% If the function returns some value	
+	|$returnVal| = |$variable|.functionName(<list of args>)	
+	% If the function does not return any values
+	|$variable|.functionName(<list of args>)
 \end{lstlisting}
 \end{minipage} 
 
@@ -654,12 +663,14 @@ The second argument of toPNG is optional. It is the layout (engine) that Graphvi
 Outputs string containing \TeX code to display the transition table of automaton $M$. 
 
 \subsubsection{toRegex}
+\label{toRegex}
 \begin{lstlisting}[language = JASL_snippet]
 	|$M|.toRegex()
 \end{lstlisting}
 
-Outputs regular expression describing language $L = L(M)$. Because no regular expression simplifier is implemented, the output of this function can be quite complicated. Nevertheless, it describes the language $L$. 
-%TODO REFERENCE ALGORITHM
+Outputs regular expression describing language $L = L(M)$. Because no regular expression simplifier is implemented, the output of this function can be quite complicated. Nevertheless, it describes the language $L$. The output has a slightly different format from the definition in \ref{sec:regex-def}. In the output, concatenation of regular expressions $\mathbf{r_1}, \mathbf{r_2}$ is written as $\mathbf{r_1}\cdot \mathbf{r_2}$ instead of $\mathbf{r_1r_2}$. This format is also accepted by \ref{fromRegex}.
+
+To convert automaton to regular expression the JAutomata library uses a modified algorithm described in Melichar~p.98~Algorithm~2.120~\cite{melichar}.
 
 \subsubsection{toDot}
 \label{subsec:toDot}
@@ -869,22 +880,26 @@ One of the main goals of this project was to create live console environment. Th
 
 \subsection{Problems with Graphviz-java}
 \label{subsec:graphviz-java-problems}
-I thought that using this library would save me a lot of work on parsing dot code. Graphviz-java is originally meant to be used to construct graphs and then convert them to dot code directly and vice versa. However, I wanted something different from the library. I wanted to use it only for parsing of the dot code. Then, I wanted to extract only layout information (x and y coordinates) from the objects. 
+I thought that using this library would save me a lot of work on parsing dot code. Graphviz-java is originally meant to be used to construct graphs by the means of Java objects, then convert those object to dot code and vice versa. However, I wanted something different from the library. I wanted to use it only for parsing of the dot code. Then, I wanted to extract only layout information (x and y coordinates) from the objects. 
 
 Graphviz-java does not have any documentation on its classes or functions. So I had to reverse-engineer most of the fields of the object and their meaning, using java reflection and debugger. Fortunately, I found the attributes in the classes created by graphviz-java and was able to extract them. 
 
-I struggled on one particular bug in Graphviz-java library related to knot points extraction of the edges. If dot code from Graphviz contained any edge that was long enough to have more than nine anchor points, it would line-break the dot file in the middle of \textbf{pos} attribute. This caused Graphviz-java to parse it incorrectly. Fixing this issue made me thing if using Graphviz-java was worth it in the first place.
+I struggled on one particular bug in Graphviz-java library related to knot points extraction of the edges. If dot code from Graphviz contained any edge that was long enough to have more than nine anchor points, it would line-break the dot file in the middle of \textbf{pos} attribute. This caused Graphviz-java to parse it incorrectly. Fixing this issue made me think, whether using Graphviz-java was worth it in the first place.
 
 So using graphviz-java for this use-case may not have been the best idea. It might have been easier to get plain text file as an output from Graphviz and parse it myself. 
 
 \chapter{Drawing images}
-Drawing state diagrams such that they are readable and nice is a very complicated problem. I used Graphviz to create the layout. It draws nice diagrams, but I needed to convert the output to TikZ code. This gave birth to many problems with sizes of images, angle conversion and label positions. 
+Drawing state diagrams in such a way that they are readable and nice is a very complicated problem. 
+%TODO Reference o komplikovanosti
+I used Graphviz to create the layout of the graph. It draws nice diagrams, but I needed to convert the output to TikZ code. To do that I instructed graphviz to output so-called attributed dot code. This reproduces the input with added information about the layout of the graph. This gave birth to many problems with sizes of images, angle conversion and label positions. 
 
 \section{Using Graphviz for layout output}
 \label{sec:problems_graphviz}
-One of the main problems of converting from dot code to TikZ code was the size of the output image. TikZ itself does not take care about page size. If input coordinates exceed page size it will draw cropped image. The output of toTikz conversion should fit on regular A4 page so I needed a way to tell Graphviz the maximum dimensions of the output image. 
+One of the main problems of converting from dot code to TikZ code was the size of the output image. 
+%TODO Ref o komplikovanosti
+TikZ iteslf does not take care of page size. If input coordinates exceed page size, it will draw cropped image. The output of toTikz conversion should fit on regular A4 page so I needed a way to tell Graphviz the maximum dimensions of the output image.
 
-Graphviz has many attributes that you can specify in the dot file: styling of the edges, positions of nodes and many more \cite{dot-notation}. However, there are some attributes that have no effect on the resulting file because Graphviz often ignores some of the arguments to produce a better-looking image.
+There are many attributes that you can specify in the dot file: styling of the edges, positions of nodes and many more \cite{dot-notation}. However, there are some attributes that have no effect on the resulting dot file because Graphviz often ignores some of the attributes to produce a better-looking image.
 
 Size attribute is used to control the size of output images. Graphviz copies size attribute to the result dot file, but it does not affect the coordinates of the elements. It is included to the final dot only to instruct the rendering engine on how to scale/orient the resulting image. Because JASL reads position attributes from dot output format, the size attribute does not have any effect on the images.
 
@@ -959,6 +974,7 @@ We have automaton that accepts only word $ab$. This automaton has four states. T
 \end{figure}
 
 \section{Relative position model}
+\label{sec:relpos}
 Originally, I wanted JASL to output TikZ code that would be the most easy for the user to edit. TikZ automata library was built to use the \textbf{relative} position model. In this model every element of the graph is placed in relation to some other element. This allows for very easy editing of the image. For example, nodes of the graph on figure~\ref{fig:layout_diff_circo} could be described as follows:
 
 \begin{verbatim}
@@ -1069,6 +1085,37 @@ Now it is much harder to do this simple operation.
 Because we do not know, if and how the user wants to reorganize the output graph, there would have to be some utility, that would re-route the edges. Without this utility, the relation model would be of no use.
 
 Because of these difficulties, I discarded the idea of relative positions and used absolute positions in the final version of the program.
+
+\subsection{Edge angle calculation}
+\label{subsec:edge-angle}
+The graphviz output dot file specifies edge shapes in the pos attribute. This attribute contains coordinates of several knot points, specifying a spline curve. As stated in previous section, there are three possible shapes of edges in automata library: straight, bend left, bend right. Approximation to those three edge shapes in TikZ produced mostly illegible images. 
+
+The ultimate goal was to keep the TikZ code simple and easy to read. I decided to use the angles library for TikZ, that allows the user to specify the angle of the bend. The angle is a numeric value between $0-360$, which specifies the angle $\alpha$ depicted in this picture:
+
+\begin{figure}[H]
+\begin{tikzpicture}[>=stealth',shorten >=1pt,auto,node distance=4cm,semithick,]
+	\node[state] (0) at (0,0) {$q_0$};
+	\node[state] (1) at (4,0) {$q_1$};
+	\path (0) edge [bend left = 60] node{} (1);
+	
+	\draw (1.27,2.19) -- (0) -- (1);
+	\draw[red] (2,0) arc (0:60:2cm);
+	\draw[red] (1.3,0.7) node {$\alpha$};
+  \end{tikzpicture}
+\end{figure}
+
+Splines generated by graphviz are generally simple, mostly elliptical. I used this to approximate the curve angle using this function:
+\begin{align*}
+	f(\vec{q_0}, \vec{q_1}, P) &= angle(\vec{q_1}, \vec{q_0}, \vec{p}) \cdot ((\vec{q_1} - \vec{q_0})\times (\vec{p} - \vec{q_0})) \text{, where } \\
+	\vec{p} &= \argmax_{\vec{p} \in P} (angle(\vec{q_1}, \vec{q_0}, \vec{p})) \\
+	angle(\vec{a}, \vec{b}, \vec{c}) &= \frac{
+		180 \cdot \arccos{ \vec{x} \cdot \vec{y} }}{ \pi \cdot |\vec{x}| \cdot |\vec{y}| }, \vec{x} = (\vec{a} - \vec{b}), \vec{y} = (\vec{c}-\vec{b})
+\end{align*}
+where $q_0$ is the source node center, $q_1$ is the target node center and $P$ is a set of spline knot points. This function returns an angle. If it is negative, the curve is to the right, if it is positive, the curve is to the left. 
+
+While this function has good results when graphviz uses elliptical edges, it is not so good otherwise. Graphviz uses ellipses only if the edges are short. If the edge exceedes certain point, it will flatten the spline curve. In these cases, angles output by function $f$ are not optimal. 
+
+This function could be improved in the future \ref{par:angle-of-edges}
 
 
 \chapter{Examples of usage, practice, problems of testing}
@@ -1264,22 +1311,93 @@ The last command will print true to console. Note that by executing code in appe
 \chapter{What to do next? Looking to the future}
 \label{todo}
 
-\ldots These areas could use some work in the future  \ldots
+JASL and its interpreter does not yet implement some of the features that I would want it to. The ultimate goal of this application is to make tasks regarding automata simply. There are many quality-of-life improvements that yet wait to be implemented. I will describe some of those features in this chapter.
 
-\section{JASL Syntax}
-\ldots Other data types \ldots
+\section{JAutomata}
+The JAutomata library could implement other types of automata (Mealy, Moore, Push-down). The implementation could use the structure of the project and its classes with minor tweaks. 
 
-\section{Interpreter}
+\subsection{Operations over regular expressions}
+The regular expression format used in JAutomata library, which is also defined in this document differs from the format that is usually used in literature. It does not implement powers of regular expressions. The syntax for powers is simple:
+\paragraph{Powers of regular expressions}
+Suppose we have regular expression $r$ that describes language $L$. Then regular expression $r^i$ describes language $L^i$ which can be defined recursively as:
+\begin{itemize}
+	\item $L^0 = \{\varepsilon\}$
+	\item $L^{n+1} = LL^{n}$
+\end{itemize} 
+
+Another operator missing from the implementation is the positive iteration of regular expressions. Positive iteration can be defined as: 
+\begin{equation*}
+L^+ = \bigcup_{i=1}^\infty L^i
+\end{equation*}
+
+Both of these operators are only a simplification of regular expressions. For example regular expression $r^+$ can be written as $rr^*$ without changing the resulting language.
+
+\subsection{Regular expression simplifier}
+For the moment, the library is missing any regular expression simplifier. Problem of regular expression simplification is a "hard" problem. This could be implemented using already existing algorithms that yield "good" results~\cite{simplifying-regex}. There are some frameworks that can simplify regular expressions, but I do not know of any that works with regular expression format specified in \ref{sec:regex-def}. This format is commonly used in literature as opposed to other (enhanced) formats commonly used in programming languages. 
+
+\section{JASL}
+\subsection{JASL Syntax}
+JASL syntax could use some more advanced features. Such as element extraction from a list or a string, user-defined functions, other data-types or allowing the user to use some of the more advanced features of JAutomata library. It could also make modification of PNG images possible (colors of edges, size of the image, etc.).
+
+Standardization of the syntax would help users that are used to working with regular programming languages. One example of such standardization would be encapsulation of strings in double quotes. This would allow for better exception handling and syntax error detection.
+
+\subsection{Interpreter}
 \label{sec:interpreter_upgrades}
-\ldots Stack frames, exceptions handles, etc... \ldots
+Examples of possible upgrades to the JASL interpreter are:
+\begin{itemize}
+	\item Making error messages more clear
+	\item Implementing command that would print all used variables
+	\item Implementing stack frames for script executions
+	\item Saving current workspace (state of all variables) to a file
+	\item Live preview of generated images
+\end{itemize}
 
-\section{Graph coordinate conversion}
+%TODO MAYBE COMPLETE
+
+\subsection{Graph conversion}
 \label{sec:coordinate_upgrades}
+The JASL language could implement the relative position model, as described in section~\ref{sec:relpos}. The problem is hard and it would be necessary to implement some tool to change relations in the graph. If this feature is implemented, adding live preview of graphs would be advisable.
+
+The conversion to TikZ code as it is, has two major flaws:
+\paragraph{Coordinate conversion}
+As described in section~\ref{sec:problems_graphviz}, the current implementation of dot to Tikz coordinate conversion stretches small graphs. One way of dealing with this stretching is to calculate the required distance between nodes. The calculation would compare the size of the node from the dot code to the distance between nodes. Based on the result it would decide, how distant the nodes should be. There are lots of constants in such calculation, that would require fine tuning and a lot of experminetation.
+
+\paragraph{Angle of edges}
+\label{par:angle-of-edges}
+
 \ldots Stretched problem, relativistic coordinates \ldots
 
 \chapter{Conclusion}
 Lorep ipsum \cite{doe}
 
+
+
+\begin{thebibliography}{1}
+	%TODO REMOVE DOE! :D
+	\bibitem{doe} J. Doe. \emph{Book on foobar.} Publisher X, 2300.
+	\bibitem{demlova} Marie Demlová. \emph{Jazyky, automaty a gramatiky.} Materials for CTU course Jazyky, Automaty a Gramatiky, 2017. \url{http://math.feld.cvut.cz/demlova/teaching/jag/jag7dohromady.pdf} 
+	\bibitem{graphviz} Graphviz official webiste. \url{https://www.graphviz.org/}.
+	\bibitem{graphviz-java} Graphviz-java official repository. \url{https://github.com/nidi3/graphviz-java}
+	\bibitem{tikz-tut} Satyaki Sikdar. \emph{Drawing Finite State Machines in \LaTeX using TikZ A Tutorial.} University of Notre Dame, 2017. \url{https://www3.nd.edu/~kogge/courses/cse30151-fa17/Public/other/tikz_tutorial.pdf}
+	
+	\bibitem{alg_lib_toolkit} Jan Travnicek and col. Private Gitlab repository of Algorithms Library Toolkit developed at FIT CVUT, accessible with CVUT credentials. \url{https://gitlab.fit.cvut.cz/algorithms-library-toolkit/automata-library}
+	\bibitem{melichar} Bořivoj Melichar. \emph{Jazyky a Překlady.} CVUT, 2003.	
+	
+	\bibitem{acceptor-algorithm} Borivoj Melichar, Jan Holub, Tomas Polcar. \emph{Text searching algorithms.} CTU Prague, 2005. Algorithm p.203. \url{http://www.stringology.org/athens/TextSearchingAlgorithms/tsa-lectures-1.pdf#page=203}
+	
+	\bibitem{dot-notation} Manual for DOT language \url{https://www.graphviz.org/doc/info/lang.html}
+	
+	\bibitem{tikz-notation} Manual for TikZ automata library \url{https://www.bu.edu/math/files/2013/08/tikzpgfmanual.pdf} p.175-180
+	
+	\bibitem{tex} \TeX Users Group website. \url{http://tug.org/}
+	
+	%This is a bit cheeky
+	\bibitem{school-notes} Tomas Horovsky. Notes for the A4B01JAG CVUT course \url{https://github.com/Horovtom/SchoolNotes/blob/master/A4B01JAG/A4B01JAG.pdf}
+	
+	\bibitem{simplifying-regex} H. Gruber, S. Gulan. \emph{Simplifying Regular Expressions
+A Quantitative Perspective}. Universitat Gießen, 2009. \url{https://www.researchgate.net/profile/Hermann_Gruber3/publication/228529267_Simplifying_Regular_Expressions_A_Quantitative_Perspective/links/02e7e517274e7a8f6e000000/Simplifying-Regular-Expressions-A-Quantitative-Perspective.pdf}
+	
+\end{thebibliography}
 
 \appendix
 \chapter{Used code}
@@ -1338,27 +1456,7 @@ digraph automaton {
 %\bibliographystyle{amsalpha}
 %\bibliography{bpp}
 
-\begin{thebibliography}{1}
-	%TODO REMOVE DOE! :D
-	\bibitem{doe} J. Doe. \emph{Book on foobar.} Publisher X, 2300.
-	\bibitem{demlova} Marie Demlová. \emph{Jazyky, automaty a gramatiky.} Materials for CTU course Jazyky, Automaty a Gramatiky, 2017. \url{http://math.feld.cvut.cz/demlova/teaching/jag/jag7dohromady.pdf} 
-	\bibitem{graphviz} Graphviz official webiste. \url{https://www.graphviz.org/}.
-	\bibitem{graphviz-java} Graphviz-java official repository. \url{https://github.com/nidi3/graphviz-java}
-	\bibitem{tikz-tut} Satyaki Sikdar. \emph{Drawing Finite State Machines in \LaTeX using TikZ A Tutorial.} University of Notre Dame, 2017. \url{https://www3.nd.edu/~kogge/courses/cse30151-fa17/Public/other/tikz_tutorial.pdf}
-	
-	\bibitem{alg_lib_toolkit} Jan Trávníček and col. Private Gitlab repository of Algorithms Library Toolkit developed at FIT CVUT, accessible with CVUT credentials. \url{https://gitlab.fit.cvut.cz/algorithms-library-toolkit/automata-library}
-	\bibitem{melichar} Bořivoj Melichar. \emph{Jazyky a Překlady.} ČVUT, 2003.	
-	
-	\bibitem{acceptor-algorithm} Bořivoj Melichar, Jan Holub, Tomáš Polcar. \emph{Text searching algorithms.} CTU Prague, 2005. Algorithm p.203. \url{http://www.stringology.org/athens/TextSearchingAlgorithms/tsa-lectures-1.pdf#page=203}
-	
-	\bibitem{dot-notation} Manual for DOT language \url{https://www.graphviz.org/doc/info/lang.html}
-	
-	\bibitem{tikz-notation} Manual for TikZ automata library \url{https://www.bu.edu/math/files/2013/08/tikzpgfmanual.pdf} p.175-180
-	
-	\bibitem{tex} \TeX Users Group website. \url{http://tug.org/}
-	
-	
-\end{thebibliography}
+
 
 \end{document}
 

@@ -3,6 +3,7 @@
 \usepackage{color}
 \usepackage{multicol}
 \usepackage{amsmath}
+\usepackage{smartdiagram}
 \usepackage{tikz}
 \usetikzlibrary{shapes, angles, calc, quotes,arrows,automata, positioning}
 
@@ -410,6 +411,8 @@ In this section I will describe the functions that are implemented to JASL synta
 \end{lstlisting}
 
 Executes script on specified path. The argument is a string that contains absolute or relative path to a file in filesystem. It uses currently defined variables for the execution and update them.
+
+A script is a file that contains lines with JASL code. It is recommended to give JASL scripts the .jasl extension.
 
 \subsubsection{fromCSV}
 \begin{lstlisting}[language = JASL_snippet]
@@ -891,7 +894,14 @@ So using graphviz-java for this use-case may not have been the best idea. It mig
 \chapter{Drawing images}
 Drawing state diagrams in such a way that they are readable and nice is a very complicated problem. 
 %TODO Reference o komplikovanosti
-I used Graphviz to create the layout of the graph. It draws nice diagrams, but I needed to convert the output to TikZ code. To do that I instructed graphviz to output so-called attributed dot code. This reproduces the input with added information about the layout of the graph. This gave birth to many problems with sizes of images, angle conversion and label positions. 
+I used Graphviz to create the layout of the graph. It draws nice diagrams, but I needed to convert the output to TikZ code. To do that I instructed graphviz to output so-called attributed dot code. This reproduces the input with added information about the layout of the graph. This dot code is then converted to TikZ code. 
+
+\smartdiagramset{back arrow disabled=true}
+\smartdiagram[flow diagram:horizontal]{Automaton, Dot code, Graphviz, Attributed dot code, TikZ code}
+
+
+%TODO Add clarifying image of the process
+This gave birth to many problems with sizes of images, angle conversion and label positions. 
 
 \section{Using Graphviz for layout output}
 \label{sec:problems_graphviz}
@@ -899,11 +909,11 @@ One of the main problems of converting from dot code to TikZ code was the size o
 %TODO Ref o komplikovanosti
 TikZ iteslf does not take care of page size. If input coordinates exceed page size, it will draw cropped image. The output of toTikz conversion should fit on regular A4 page so I needed a way to tell Graphviz the maximum dimensions of the output image.
 
-There are many attributes that you can specify in the dot file: styling of the edges, positions of nodes and many more \cite{dot-notation}. However, there are some attributes that have no effect on the resulting dot file because Graphviz often ignores some of the attributes to produce a better-looking image.
+There are many attributes that you can specify in the dot file: styling of the edges, positions of nodes and many more \cite{dot-notation}. However, there are some, that have no effect on the attributed dot code because Graphviz often ignores some of the attributes to produce a better-looking image.
 
-Size attribute is used to control the size of output images. Graphviz copies size attribute to the result dot file, but it does not affect the coordinates of the elements. It is included to the final dot only to instruct the rendering engine on how to scale/orient the resulting image. Because JASL reads position attributes from dot output format, the size attribute does not have any effect on the images.
+Size attribute is used to control the pixel size of output images. Graphviz copies size attribute to the attributed dot file, but it does not affect the coordinates of the elements. It is included to the final dot only to instruct the rendering engine on how to scale/orient the resulting image. Because JASL reads position attributes from dot output format, the size attribute does not have any effect on them.
 
-The output dot file contains coordinates for all elements of the graph. However, these are internal coordinates of Graphviz. I needed to convert these coordinates to TikZ internal coordinates. I measured the maximum feasible width/height of TikZ image to fit regular A4 page. I tried using linear mapping, but for that I would have to know the bounding box of the dot coordinates. Graphviz has bounding box attribute in the output file that should specify the bounding box of the image. Unfortunately this value does not correspond to the maximum coordinate values of elements. Again, it is only an instruction for the rendering engine that does not correspond to the element coordinates.
+The attributed dot file contains coordinates for all elements of the graph. However, these are in Graphviz coordinate system. I needed to convert these coordinates to TikZ coordinate system. I measured the maximum feasible width/height of TikZ image to fit regular A4 page. I tried using linear mapping, but for that I would have to know the bounding box of the dot coordinates. Graphviz has bounding box attribute in the attributed dot file, that should specify the bounding box of the image. Unfortunately this value does not correspond to the maximum coordinate values of elements. It is only an instruction for the rendering engine that does not correspond to the element coordinates.
 
 My only choice was to calculate the bounding box myself by finding the largest used coordinate on both axies. As a side-effect I lost information about spacing of the elements and maximum size. This means that the output TikZ code draws small graphs unnecessarily stretched. This is caused by mapping small image onto larger area. The following two images show png image generated by graphviz and the TikZ code result image in contrast with one another. 
 
@@ -934,7 +944,7 @@ My only choice was to calculate the bounding box myself by finding the largest u
 This unwanted effect could be one of the areas to work on in the future.~\ref{sec:coordinate_upgrades}
 
 \subsection{Graphviz layout engines}
-Graphviz has three main layout engines that can be used to draw automaton state diagrams:
+Graphviz has four main layout engines that can be used to draw automaton state diagrams:
 \begin{itemize}
 	\item dot
 	\item neato
@@ -947,29 +957,29 @@ There are also other engines: sfdp, fdp. These engines are not implemented in JA
 These engines produce vastly different images. I got the best results using dot engine, but for some particular examples \textbf{circo} yields more visually appealing images.
 
 \subsubsection{Example of layout difference}
-We have automaton that accepts only word $ab$. This automaton has four states. These are the images of this automaton generated by different layout engines:
+We have an automaton $M$. This automaton has four states. These are the images of automaton $M$ generated by different layout engines:
 
 \begin{figure}[H]
 \includegraphics[width=0.8\linewidth]{figures/layouts_dot.png}
-\caption{Image generated using \textbf{dot} layout}
+\caption{Image of automaton $M$ generated using \textbf{dot} layout}
 \label{fig:layout_diff_dot}
 \end{figure}
 
 \begin{figure}[H]
 \includegraphics[width=0.7\linewidth]{figures/layouts_neato.png}
-\caption{Image generated using \textbf{neato} layout}
+\caption{Image of automaton $M$ generated using \textbf{neato} layout}
 \label{fig:layout_diff_neato}
 \end{figure}
 
 \begin{figure}[H]
 \includegraphics[width=0.7\linewidth]{figures/layouts_circo.png}
-\caption{Image generated using \textbf{circo} layout}
+\caption{Image of automaton $M$ generated using \textbf{circo} layout}
 \label{fig:layout_diff_circo}
 \end{figure}
 
 \begin{figure}[H]
 \includegraphics[width=0.2\linewidth]{figures/layouts_twopi.png}
-\caption{Image generated using \textbf{twopi} layout}
+\caption{Image of automaton $M$ generated using \textbf{twopi} layout}
 \label{fig:layout_diff_twopi}
 \end{figure}
 
@@ -984,24 +994,24 @@ Originally, I wanted JASL to output TikZ code that would be the most easy for th
 	\node[state, accepting] (3) [below right of=1] 	{b1};
 \end{verbatim}
 
-This code can be quickly read and edited as opposed to absolute coordinates. TikZ allows nodes to be in eight different directions: above, above right, right, below right, below, below left, left, above left. Additionaly the distance between nodes could be specified, but that clutters the code. In the original notation, there are only three types of edge shapes: bend left, bend right and straight. 
+This code can be quickly read and edited as opposed to absolute coordinates. TikZ allows nodes to be in eight different directions: above, above right, right, below right, below, below left, left, above left. Distance between nodes can be specified, but that clutters the code. TikZ places nodes on outer edge of a circle with diameter equal to the distance between nodes. There are only three types of edge shapes: bend left, bend right and straight. 
 
 Using simplifications of the relative position TikZ code, poses several constraints on the layout generator. Graphviz does not have support for these types of constraints. Graphviz has no attribute for ideal edge length or grid alignment of nodes. So the only option is to calculate/approximate these positions. However, this approximation would destroy the layout completely at times. 
 %TODO Add example
 
 \subsection{Relation chains}
-The relative model is easily editable, but only if the relations are in right order. The ordering of relations is a problem, because the program has to approximate, which nodes should be connected.
+The relative model is easily editable, but only if the relations are connected right. The grouping of relations is a problem, because the program has to approximate, which nodes should be connected to which.
 
 A simple example:
 
 Suppose we have some graph, which is constructed using these relations:
 
 \begin{enumerate}
-	\item $1$ is right of $0$
-	\item $4$ is right of $1$
-	\item $5$ is below of $4$
-	\item $3$ is below of $0$
-	\item $2$ is right of $3$
+	\item $1$ is to the right of $0$
+	\item $4$ is to the right of $1$
+	\item $5$ is under $4$
+	\item $3$ is under $0$
+	\item $2$ is to the right of $3$
 \end{enumerate}
 
 We can visualise these relations like this:
@@ -1080,7 +1090,7 @@ Now suppose we have these relations in the graph:
 \end{tikzpicture}
 \end{figure}
 
-Now it is much harder to do this simple operation. 
+Now it is much harder to do this simple operation, because to produce the wanted result, we have to change the relation of three nodes: $1, 4, 5$. 
 
 Because we do not know, if and how the user wants to reorganize the output graph, there would have to be some utility, that would re-route the edges. Without this utility, the relation model would be of no use.
 
@@ -1142,7 +1152,7 @@ $\leftarrow$	& $3$ & $3$		& $3$
 \label{fig:examples_NFA_table}
 \end{table} 
 
-In order to define automaton $M_1$ in JASL language we have to define a few lists: 
+In order to define automaton $M_1$ in JASL language we define a few lists: 
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
@@ -1226,7 +1236,7 @@ Suppose we have automaton $M_3$. This automaton accepts language $L = L(M_3)$. T
 	\underline{r_2} = (a+b)^*ab^*, \hspace{1cm} L(M_3) = L_{\underline{r_2}} = L
 \end{equation*}
 
-We construct this automaton and create tex file to display it in JASL:
+We can use JASL to construct this automaton and create tex file to display it:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
@@ -1238,7 +1248,7 @@ We construct this automaton and create tex file to display it in JASL:
 	|$tikzCode| = |$a|.toTikz()
 	|$end| = \end{document}
 	
-	% Now save these parts to image.tex file
+	% Now append these parts in the image.tex file
 	|$class|.save(image.tex)
 	|$includes|.save(image.tex)
 	|$beginning|.save(image.tex)
@@ -1284,9 +1294,9 @@ After compiling image.tex file we get this image:
 \label{fig:compilation_tikz_code}
 \end{figure}
 
-\section{Example of executable file}
-
-Suppose we have a file append.jasl, that contains the code that will concatenate regular expression: $ab^*a$ to language accepted by automaton saved in variable \textbf{\$i}. It will save the result to variable \textbf{\$j}. Such file could contain for example this code:
+\section{Example of JASL script file}
+In this example we can see the execution of JASL script file and the side effects of using 
+Suppose we have a file append.jasl, that contains the code that will concatenate the language produced by regular expression: $ab^*a$ to language accepted by automaton saved in variable \textbf{\$i}. It will save the result to variable \textbf{\$j}. Such file could contain for example this code:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
@@ -1300,13 +1310,18 @@ We can check whether the function worked correctly:
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
 	|$i| = fromRegex(bba)
-	execute(append.jasl)
+	% We define the append variable
+	|$j| = hello
 	|$shouldBe| = fromRegex((bba)(ab*a))
+
+	execute(append.jasl)
+	
+	% We can see that the contents of the variable k were overwritten:
 	|$j|.equals(|$shouldBe|)
 \end{lstlisting}
 \end{minipage} 
 
-The last command will print true to console. Note that by executing code in append.jasl we have overwritten anything that might be in the variable \$append. The user has to be aware of this side effect. Stack frames might be implemented later~\ref{sec:interpreter_upgrades}
+The last command will print true to console. Note that by executing code in append.jasl we have overwritten anything that might be in the variable \$j. The user has to be aware of this side effect. Stack frames might be implemented later~\ref{sec:interpreter_upgrades}
 
 \chapter{What to do next? Looking to the future}
 \label{todo}

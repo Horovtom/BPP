@@ -28,7 +28,7 @@
     morestring=[b]", % defines that strings are enclosed in double quotes
     moredelim=[is][\color{variablesColor}]{|}{|},
     basicstyle=\ttfamily,
-    emph={eps},
+    emph={eps, circo, neato, dot, twopi},
     emphstyle=\color{mauve},
     numbers=left,
     morekeywords={Automaton, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong, getTikzIncludes, union, intersection, kleene, concatenation, complement, execute, renameState, renameTerminal, toTikz, save},
@@ -41,7 +41,7 @@
     morestring=[b]", % defines that strings are enclosed in double quotes
     moredelim=[is][\color{variablesColor}]{|}{|},
     basicstyle=\ttfamily,
-    emph={eps},
+    emph={eps, circo, neato, dot, twopi},
     emphstyle=\color{mauve},
     numbers=none,
     morekeywords={Automaton, reduce, toCSV, fromCSV, toDot, toSimpleDot, accepts, toRegex, fromRegex, getExample, equals, help, helpLong, getTikzIncludes, union, intersection, kleene, concatenation, complement, execute, renameState, renameTerminal, toTikz, save},
@@ -67,7 +67,7 @@
 xdoctype = B,
 xfaculty = F3,
 mainlanguage = english,
-titlelanguage = czech,
+titlelanguage = english,
 title-english = {Finite Automata Drawing Platform},
 title-czech = {Platforma pro kreslení diagramů konečných automatů},
 department-english = {Department of Cybernetics},
@@ -75,6 +75,8 @@ department-czech = {Katedra kybernetiky},
 author = {Tomáš Hořovský},
 supervisor = {RNDr. Marko Genyk-Berezovskyj},
 supervisor-address = {Praha, Na Zderaze 269/4, room: G-9},
+keywords-english = {Java, Automata theory, Regular automaton, Regular expression, Graphviz, JAutomata},
+keywords-czech = { Java, Teorie automatů, Regulární automat, Regulární výraz, Graphviz, JAutomata},
 month = 1,
 year = 2019,
 specification-file = zadani.pdf,
@@ -83,13 +85,16 @@ specification-file = zadani.pdf,
 \ctuprocess
 
 \begin{abstract-english}
-The goal of this project was to develop new coding language for describing automata and operations with them, implement interactive shell interface for executing the commands and finalize the \textbf{jautomata} library for operations on automata. The language operates the \textbf{jautomata} library and implements export of automata to various output formats including \LaTeX code to display the automaton. 
+The goal of this project was to develop new scripting language for describing automata and operations with them, implement interactive shell interface for executing the commands and finalize the \textbf{jautomata} library for operations on automata. The interpreter operates the \textbf{jautomata} library and implements export of automata to various output formats including \TeX code to display the automaton. 
 \end{abstract-english}
+
+\begin{abstract-czech}
+Cílem tohoto projektu bylo dokončení knihovny \textbf{JAutomata} pro operace s automaty, vývoj nového skriptovacího jazyka \textbf{JASL}, který popisuje automaty a operace s těmito automaty a implementace interaktivního konzolového prostředí pro spouštění příkazů tohoto jazyka, které používá knihovnu JAutomata. Skriptovací jazyk JASL měl umožňovat export automatů v různých formátech, včetně kódu pro jazyk \TeX, pro kreslení jejich stavových diagramů.
+\end{abstract-czech}
 
 
 \begin{thanks}
-I thank to my family and my supervisor for support in dire times. \ldots
-%TODO FILL
+I want to thank RNDr. Marko Genyk-Berezovskyj and prof. RNDr. Marie Demlová, CSc. for their help. I am also thankful to my family for their endless support.
 \end{thanks}
 
 \begin{declaration}
@@ -107,25 +112,26 @@ V Praze dne 7.1.2019 \\\par
 \maketitle
 
 \chapter{Introduction and motivation}
-This project started as a passion of mine for Automata, where I needed a tool to do simple Automata operations and I kept adding new functionality until the original automata-cpp library was so messy I could not orient in the code very well. After some time of struggling with the code, I needed to choose the subject of my software project and my bachelor's thesis. It was only natural that I would rewrite the whole library properly. \textbf{jautomata} library was the result. In my software project, I wrote most of the \textbf{jautomata} library, while in my bachelor's thesis I finished the library and I started working on \textbf{JASL} and the interpreter for this language. Both jautomata library and JASL interpreter are written in pure object-oriented Java. The program should be able to run on Linux and Windows machines, but the primary support is for Linux.
+Java Automata Syntax Language (abbreviated to JASL) is a scripting language that I developed as a part of this project. It allows the user to define and work with acceptor finite state machines. I implemented an interpreter for this language that functions as a live console environment. One of the main features of JASL is the ability to export state machines to diagrams in a format native to \TeX.
 
-\subsection{Description of the project}
-Java Automata Syntax Language (abbreviated to JASL) is a scripting language that was developed as a part of this project. It allows the user to define and work with acceptor finite state machines. This project implements an interpreter for this language that functions as a live console environment. One of the main features of JASL is the ability to export state machines to diagrams in a format native to \TeX.
+Both jautomata library and JASL interpreter are written in pure object-oriented Java. The program should be able to run on Linux and Windows operating systems, but the primary support is for Linux.
+
+This project started as a passion of mine for automata. I implemented a library in c++ that could do reduction of automata. I kept adding new functionality until the original automata-cpp library was so messy I could not orient in the code very well. After some time of struggling with the code, I needed to choose the assignment for my software project and my bachelor's thesis. It was only natural that I would finish and rewrite the whole library properly. \textbf{JAutomata} library was the result. I wrote most of the \textbf{JAutomata} library in my software project. I finished the library and I started working on \textbf{JASL} and the interpreter in my bachelor's thesis . 
 
 \subsection{Motivation}
 
-When I wrote my own material for Automata and Grammars, I stumbled upon the problem of visualizing automata in the document. I wanted a fast and reliable way to draw automaton diagrams in place in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{TikZ}. TikZ is a powerful image drawing library that has many features. I tried drawing automaton directly with TikZ, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for TikZ called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely while keeping the code simple and clear. 
+When I wrote my own material for Automata and Grammars in \LaTeX, I stumbled upon the problem of visualizing automata in the document. I wanted a fast and reliable way to draw automaton diagrams in code, not having to include image files to the compilation folder. I searched for a suitable way to do so and I found \textbf{TikZ}. TikZ is a powerful image drawing library that has many features. I tried drawing automaton directly with TikZ, but the code was unnecessarily long and tedious to write. After a couple of diagrams I started looking for another option. Then I found a library for TikZ called \textbf{automata}. It was just what I was looking for. It could draw nodes and edges nicely while keeping the code simple and clear. 
 
 Next problem on the line was to draw these diagrams so that they are as simple as possible. Mostly eliminating crossing edges did the trick. However the more complex the diagram got, the harder it was to eliminate those by hand. I used \textit{Graphviz} to do the layout work for me. Then it was all about the process of converting Graphviz output to the TikZ code.
 
-Automata have a few common operations associated with them. These include reduction, deciding whether $w \in L$, constructing automaton that accepts language $L = L_1 \cup L_2$ or even automaton that accepts $L^*$. I decided to create a library that would implement all of these operations and more. There are libraries that can do these operations such as Algorithms~Library~Toolkit~\cite{alg_lib_toolkit}, but they are usually complicated to use or they are not public and they cannot output directly to \LaTeX code. 
+Automata have a few common operations associated with them. These include reduction, deciding whether a word is accepted by the automaton, constructing automaton that accepts language $L = L_1 \cup L_2$ or even automaton that accepts $L^*$. I decided to create a library that would implement all of these operations and more. There are libraries that can do these operations such as Algorithms~Library~Toolkit~\cite{alg_lib_toolkit}, but it is complicated to use, it is not public and it cannot output directly to \LaTeX code. 
 
-The goal of this project is to write a program that would implement an intuitive command line interface for operating my jautomata library that contains most of the commonly-used algorithms for working with automata. Also, it would allow the user to convert automata to various output formats including \LaTeX code.
+The goal of this project is to write a program that would implement an intuitive command line interface for operating my JAutomata library that contains most of the commonly-used algorithms for working with automata. Also, it would allow the user to convert automata to various output formats including \LaTeX code.
 
 The implemented solution uses various other programs and libraries to make the codebase smaller. It uses tools such as \textbf{Graphviz} or \textbf{graphviz-java} library. 
 
 \chapter{Definitions and terminology}
-In this section, I will define terminology used in this document to describe the relation of the application and language theory. Most of the definitions in sections \ref{sec:languages-def},\ref{sec:operations-languages-def},\ref{sec:automaton-def} and \ref{sec:regex-def} are translations of \cite{demlova}.
+In this section, I will define terminology used in this thesis to describe the relation of the application and language theory. Some of the definitions in sections \ref{sec:languages-def},\ref{sec:operations-languages-def},\ref{sec:automaton-def} and \ref{sec:regex-def} are translations of \cite{demlova}.
  
 \section{Languages}
 \label{sec:languages-def}
@@ -141,7 +147,7 @@ In this section, I will define terminology used in this document to describe the
 
 \section{Operations over languages}
 \label{sec:operations-languages-def}
-We will use the following operations over languages in this document:
+We will use the following operations over languages in this thesis:
 \begin{itemize}
 	\item \textbf{Concatenation of languages} $L_1 \subseteq \Sigma^*_1, L_2 \subseteq \Sigma^*_2$ is a set that is defined as follows:
 	\begin{equation*}
@@ -171,39 +177,52 @@ We will use the following operations over languages in this document:
 
 \section{Automaton}
 \label{sec:automaton-def}
-The term automaton in language theory includes many types of automata, such as Moore automaton, Mealy automaton or others \cite{melichar}. However, JASL and jautomata library implement only these the following of automata:
+The term automaton in language theory includes many types of automata, such as Moore automaton, Mealy automaton or others \cite{melichar}. However, JASL and JAutomata library implement only the following regular automata:
 \subsection{Deterministic Finite Automaton (DFA)}
 Deterministic Finite Automaton $M$ is defined as a tuple with five elements: $M = (Q, \Sigma, \delta, q_0, F)$, where:
 \begin{itemize}
-	\item $Q$ is a finite non-empty set of states
-	\item $\Sigma$ is a finite non-zero set of terminals
-	\item $\delta$ is the transition function $\delta : Q \times \Sigma \rightarrow Q$
+	\item $Q$ is a finite non-empty set of states.
+	\item $\Sigma$ is a finite non-empty set of terminals
+	\item $\delta$ is a transition function $\delta : Q \times \Sigma \rightarrow Q$
 	\item $q_0$ is an initial state from the set $Q$
 	\item $F$ is a subset of so-called accepting states, $F \subseteq Q$.
 \end{itemize}
 
-We say that automaton $M$ accepts word $w$ iff:
-\begin{equation*}
-	\delta^*(q_0, w) \in F
-\end{equation*}
+For the purpose of this thesis, we will interchangegably use the term \textbf{state} and \textbf{name of state} to call an element of $Q$ and we say that state name can be any string.
 
-Where $\delta^* : Q \times \Sigma^* \rightarrow Q$ is the extended transition function that is defined by induction as:
+We define the \textbf{extended transition function} $\delta^* : Q \times \Sigma^* \rightarrow Q$ by induction as:  
 \begin{align*}
 	&1: \delta^*(q, \varepsilon) = q, &q \in Q \\
 	&2: \delta^*(q, wa) = \delta(\delta^*(q, w), a), &a \in \Sigma, w \in \Sigma^*, q \in Q
 \end{align*}
+
+We say that automaton $M$ \textbf{accepts} word $w$ iff:
+\begin{equation*}
+	\delta^*(q_0, w) \in F
+\end{equation*}
+
 
 For an automaton $M$ over $\Sigma$, we define $L(M)$ (language accepted by $M$) as follows:
 \begin{equation*}
 	L(M) = \{w \mid \delta^*(q_0, w) \in F, w \in \Sigma^*\}
 \end{equation*}
 
+We say that states $p, q \in Q$ are \textbf{equivalent} iff:
+\begin{equation*}
+\forall w \in \Sigma^*, \delta^*(p, w) \in F \iff \delta^*(q, w) \in F
+\end{equation*}
+
+We say, that $M = (Q, \Sigma, \delta, q_0, F)$ is \textbf{reduced} if it does not have any unreachable states ($\forall q \in Q, \exists w \in \Sigma^*, \delta^*(q_0, w) = q$) and no two states of this automaton are equivalent.
+
+We can informally describe the operation of an automaton as follows: \\
+Suppose we have a word $w$ and an automaton $M$. We start in initial state of the automaton: $q_0$. We read the first terminal $a$ of the word and move to the state $q_1$ that we got as a result of $\delta(q_0, a)$. Now we have only $|w| - 1$ terminals left to read. We read the second terminal $b$. We move to the state $q_3$ that is the result of $\delta(q_1, b)$. We repeat this process, until we have no more terminals to read. Suppose we finished in state $q_7$. We say that word $w$ is accepted by automaton $M$ iff $q_7 \in F$.  
+
 \subsection{Non-deterministic Finite Automaton (NFA)}
-Non-deterministic Finite Automaton is a tuple: $M = (Q, \Sigma, \delta, I, F)$. Sets $Q, \Sigma, F$ have the same meaning for a DFA automaton and: 
-\begin{enumerate}
-	\item $I$ is a set of states that are considered initial: $I \subseteq Q$.
+Non-deterministic Finite Automaton is a tuple: $M = (Q, \Sigma, \delta, I, F)$. Sets $Q, \Sigma, F$ have the same meaning as in DFA definition and: 
+\begin{itemize}
+	\item $I$ is a set of states that are considered initial: $I \subseteq Q$
 	\item $\delta : Q \times X \rightarrow P(Q), P(Q)$ is a set of all subsets of states: $P(Q) = \{X \mid X \subseteq Q\}$
-\end{enumerate}
+\end{itemize}
 
 We define extended transition function for NFA as $\delta^* : Q \times \Sigma^* \rightarrow P(Q)$ by induction as:
 \begin{align*}
@@ -217,12 +236,14 @@ We say that NFA $M$ accepts word $w$ iff:
 \end{equation*}
 
 \subsection{Non-deterministic Finite Automaton with epsilon transitions (ENFA)}
-ENFA differs from regular NFA automaton by introducing so-called $\varepsilon$-transitions. These allow the automaton to move between states without reading any terminal. Formally we change the transition function as follows:
+ENFA differs from NFA by introducing so-called $\varepsilon$-transitions. These allow the automaton to move between states without reading any terminal. Formally we change the transition function as follows:
 \begin{equation*}
 	\delta: Q \times (\Sigma \cup \{\varepsilon\}) \rightarrow P(Q)
 \end{equation*}
 
-To define extended transition function for ENFA, we need another function called $\varepsilon$-closure. This can be defined as:
+To define extended transition function for ENFA, we need $\varepsilon$-closure. We can say that the epsilon closure of a set of states: $N$, is the set of all states that can be reached from states in $N$, using only epsilon transitions. 
+
+We define $\varepsilon$-closure formally as:
 \begin{enumerate}
 	\item $\forall X \subseteq Q, X \subseteq \varepsilon$-closure$(X)$
 	\item If $p \in \varepsilon$-closure$(X)$, then $\delta(p, \varepsilon) \subseteq \varepsilon$-closure$(X)$
@@ -241,14 +262,14 @@ We say that ENFA $M$ accepts word $w$ iff:
 
 \section{Regular expression}
 \label{sec:regex-def}
-Regular expressions are used to describe regular languages. In \cite{demlova} regular expressions are defined as follows:
+A regular expression (regex) can describe any regular language (language accepted by some regular automaton). In this section, we will use bold font to denote regular expressions. In \cite{demlova} regular expressions are defined as follows:
 
 Suppose we have an alphabet $\Sigma$. The set of all regular expressions over $\Sigma$ is defined as:
 \begin{itemize}
 	\item $\mathbf{\emptyset}$ is a regular expression
 	\item $\mathbf{\varepsilon}$ is a regular expression
 	\item \textbf{a} is a regular expression for every terminal $a \in \Sigma$
-	\item If $\mathbf{r_1}, \mathbf{r_2}$ are regular expressions, then $(\mathbf{r_1+r_2}), (\mathbf{r_1r_2}), (\mathbf{r_1^*})$ are regular expressions
+	\item If $\mathbf{r_1}, \mathbf{r_2}$ are regular expressions, then $\mathbf{r_1+r_2}, \mathbf{r_1r_2}$ and $\mathbf{r_1^*}$ are regular expressions
 \end{itemize}
 
 Every regular expression over an alphabet $\Sigma$ represents a language over an alphabet $\Sigma$ as follows: 
@@ -260,13 +281,14 @@ Every regular expression over an alphabet $\Sigma$ represents a language over an
 	\item If regular expression $\mathbf{r}$ represents language $L$, then regular expression $\mathbf{r^*}$ represents language $L^*$.
 \end{itemize}
 
-In addition, brackets in regular expressions define the order of operations. Regular expression $\mathbf{r}$ describes the same language as regular expression $\mathbf{(r)}$. 
+Brackets in regular expressions define the order of operations. Regular expression $\mathbf{r}$ describes the same language as regular expression $\mathbf{(r)}$. 
 
 \section{Notation of automata}
 \subsection{Table}
-In this document, automata are often described by their transition tables. Transition table has full information contained in the tuple $(Q, \Sigma, \delta, I, F)$. We construct this table from the tuple as follows:
+\label{table}
+In this thesis, automata are often described by their transition tables. Transition table has full information contained in the tuple $(Q, \Sigma, \delta, I, F)$. We construct this table from the tuple as follows:
 
-The table has $k+2, k = |\Sigma|$ columns and $n+1, n = |Q|$ rows. In the first row of the table, there are two empty cells followed by all unique elements of $\Sigma$. The next $n$ rows are each for one state $q \in Q$. In the first column is $IO(q)$, which holds information about $I$ and $F$:
+The table has $k+2, k = |\Sigma|$ columns and $n+1, n = |Q|$ rows. In the first row of the table, there are two empty cells followed by all unique elements of $\Sigma$. The next $n$ rows are each for one state $q \in Q$. In the first column is $IO(q)$, which holds information about relation of $q$ to $I$ and $F$:
 
 \begin{equation*}
 	IO(q) = 
@@ -298,7 +320,7 @@ Suppose we have a non-deterministic finite automaton $M = (\{q_0, q_1, q_2, q_3\
 	&\delta(q_3, 0) = \emptyset, &\delta(q_3, 1) = \emptyset. 
 \end{align*}
 
-We can construct the transition table:
+The resulting transition table is on figure~\ref{fig:trans-table}:
 
 \begin{figure}[H]
 \begin{ctucolortab}
@@ -310,23 +332,52 @@ We can construct the transition table:
 	$\leftarrow$ & $q_3$ & $\emptyset$ & $\emptyset$
 \end{tabular}
 \end{ctucolortab}
+\caption{Transition table of automaton $M$}
+\label{fig:trans-table}
 \end{figure}
 
 \section{State diagram}
-One of the many use-cases for JASL is to output \TeX code to draw state diagrams of automata. State diagrams are a visual representation of an automaton. They provide a complete description of the automaton they are visualizing. A state diagram is a directed graph. It is defined in 
+One of the many use-cases for JASL is to output \TeX code to draw state diagrams of automata. A state diagram is a visual representation of an automaton. It provides a complete description of the automaton it is visualizing. A state diagram is a directed graph. Ullman and Hopcroft define it in 
 \cite[Example 3.1, p.27]{hopcroft} as follows:
 \begin{quote}
-	The state diagram consists of a node for every state and a directed line from state $q$ to state $p$ with label $a$ (in $\Sigma$) if the finite automaton, in state $q$, scanning the input symbol $a$, would go to state $p$. Final states, i.e., states in $F$, are indicated by a double circle.
+	"The state diagram consists of a node for every state and a directed line from state $q$ to state $p$ with label $a$ (in $\Sigma$) if the finite automaton, in state $q$, scanning the input symbol $a$, would go to state $p$. Final states, i.e., states in $F$, are indicated by a double circle."
 \end{quote}
 
-Ullman and Hopcroft use an arrow with label: \textit{start}, to mark the initial state. This application omits the label, cleaning up the visuals of state diagrams.
+Ullman and Hopcroft use an arrow with label \textit{start}, to mark the initial state. We will omit the label, cleaning up the visuals of state diagrams. If we have multiple oriented edges from state $q_0$ to state $q_1$, we use only one edge labeled by the comma-delimited labels of all edges from $q_0$ to $q_1$. We will use dotted edges to emphasize $\varepsilon$ transitions in the diagram.
+
+\paragraph{Example} A state diagram of the automaton $M$ from Example in section~\ref{table}, is in figure~\ref{fig:example-diagram}
+
+\begin{figure}[H]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick,initial text=$ 	$]
+	\tikzset{every state/.style={minimum size=0pt}}
+	\node[state, initial, initial where=left, accepting] (0)  {$q_0$};
+	\node[state, initial, initial where=below] (1) [right of=0] {$q_1$};
+	\node[state] (2)[above right of=1]  {$q_2$};
+	\node[state, accepting] (3) [below right of=1] {$q_3$};
+	\path
+		(0)
+
+			edge node {$0$} (1)
+		(1)
+
+			edge [bend left] node {$1$} (0)
+			edge [bend left] node {$0$} (2)
+			edge  node {$0$} (3)
+		(2)
+
+			edge node {$0$} (1);
+\end{tikzpicture}
+\caption{State diagram of automaton $M$}
+\label{fig:example-diagram}
+\end{figure}
 
 \chapter{User manual}
 \section{Installation}
 There are two ways of installing this program. You can either download precompiled .jar file or compile it on your own. If you just want to use the precompiled jar, skip right to the running section~\ref{sec:execution}
 
 \subsection{Compiling JAR yourself}
-If you want to compile it yourself, you have to get the source code of the project from this \href{https://github.com/horovtom/jautomata}{repository}. After that, you can install it using \href{https://maven.apache.org/}{Maven} and \href{https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html}{JDK}. 
+\label{compile}
+If you want to compile it yourself, you have to get the source code of the project from the official github repository~\cite{repo}. After that, you can install it using \cite{maven} and \cite{jdk}. 
 
 Open a console in the root directory of the downloaded project and run these commands:
 \begin{verbatim}
@@ -334,68 +385,74 @@ Open a console in the root directory of the downloaded project and run these com
 	mvn install
 \end{verbatim}
 
-After building the project, you can find the compiled .jar file in the target folder. Use the compiled .jar with dependencies.
+After running these commands, you can find the compiled .jar file in the target/ folder. Use the compiled .jar with dependencies (jautomata-1.1-jar-with-dependencies.jar).
 
 \section{Execution}
 \label{sec:execution}
-The program can be executed from the console with this command:
+The program can be executed from the console with this command :
 
 \begin{verbatim}
-	java -jar <path-to-jar> <args>
+	java -jar <path-to-jar> [-f <path-to-file>] 
 \end{verbatim}
 
-If no args are specified, the program will enter interactive shell mode where you can type your commands and get immediate response for every command. The shell will store your variables to memory and you can use them freely. However after terminating the shell environment (by using the \textbf{quit} command) all saved variables are lost. The same effect can be achieved even without closing the environment by using the \textbf{clear} command. 
+Square brackets are optional. If the switch -f is not specified, the program will enter interactive shell mode where you can type in your command and get an immediate response. The environment will store your variables in the interpreter memory and you can manipulate them as described in section~\ref{subsec:syntax}. However after terminating the shell environment (by using the \textbf{quit} command) all variables in the interpreter memory are lost. The same effect can be achieved even without closing the environment by using the \textbf{clear} command. 
 
 If switch -f is specified, the program will look for its argument, which should be the path to an existing file. JASL will then execute commands from this file line by line. Note, that all variables are lost after terminating the program. 
 
-You can execute JASL scripts from the live interpreter environment, be done by using execute function~\ref{subsec:execute}. 
+You can execute JASL script files from the live interpreter environment, by using the execute function (full description in section~\ref{subsec:execute}). 
 
 \section{Syntax of the language}
 \label{subsec:syntax}
-The \textbf{JASL} language allows you to define variables and call functions upon those variables. Commands are parsed line by line. On every line there either an assignment, an expression, a comment or a command. There are three commands in JASL: \textbf{clean}, \textbf{help} and \textbf{helpLong}. These are described in more detail later.
+The \textbf{JASL} language allows you to define variables and call functions upon those variables. Commands are parsed line by line.
 
-\paragraph{Grammar of the language} The following is an abstract grammar describing the JASL language. Terminals are shown in red color. Square brackets enclose optional parameters. Vertical bars separate alternatives.
+\paragraph{Grammar of the language} The following is an abstract grammar describing the JASL language. Terminals are shown in red color. Square brackets enclose optional parameters. Vertical bars separate alternatives. Starting non-terminal is linethe starting non-terminal.
 
 \begin{figure}[H]
 \begin{ctucolortab}
 \begin{tabular}{rcl}
-	line &$\rightarrow$& expression | assignment | comment | $\varepsilon$ \\
+	line &$\rightarrow$& expression | assignment | comment | command | $\varepsilon$ \\
 	variable &$\rightarrow$& \textcolor{red}{\$}\textbf{variableName}\\
 	comment &$\rightarrow$& \textcolor{red}{\%}\textbf{any} \\
-	expression &$\rightarrow$& \textbf{s} | list | functionCall | variable\textcolor{red}{.}memberFCall | variable \\
+	expression &$\rightarrow$& \textbf{string} | list | functionCall | variable\textcolor{red}{.}memberFCall | variable \\
 	list &$\rightarrow$& \textcolor{red}{\{}listItems\textcolor{red}{\}} | \textcolor{red}{\{}\textcolor{red}{\}} \\
+	assignment &$\rightarrow$& variable \textcolor{red}{ = } expression \\
 	listItems &$\rightarrow$& expression | expression\textcolor{red}{,} listItems \\
 	functionCall &$\rightarrow$& \textbf{functionName}\textcolor{red}{(}[args]\textcolor{red}{)}[\textcolor{red}{.}memberFCall] \\
 	args &$\rightarrow$& expression[\textcolor{red}{,} args] \\
-	memberFCall &$\rightarrow$& \textbf{memberFName}\textcolor{red}{(}[args]\textcolor{red}{)}[\textcolor{red}{.}memberFCall]
+	memberFCall &$\rightarrow$& \textbf{memberFName}\textcolor{red}{(}[args]\textcolor{red}{)}[\textcolor{red}{.}memberFCall] \\
+	command &$\rightarrow$& \textcolor{red}{help} | \textcolor{red}{helpLong} | \textcolor{red}{clear} 
 \end{tabular}
 \end{ctucolortab}
 \end{figure}
 
 where non-terminals:
 \begin{itemize}
-	\item \textbf{any} can be any string that does not contain linebreak
-	\item \textbf{variableName} can be any non-empty string that does not contain any whitespace characters or dots. 
+	\item \textbf{any} can be any sequence of characters that does not contain linebreak
+	\item \textbf{variableName} can be any non-empty sequence of characters that does not contain any whitespace characters or dots. 
 	\item \textbf{functionName} is any function name from chapter \ref{sec:functions}
 	\item \textbf{memberFName} is any function name from chapter \ref{subsec:member-functions}
-	\item \textbf{s} is any string that does not start with any function name, member function name or any of these symbols: \textcolor{red}{\textbf{\{ , \% \$}} and does not contain linebreak
+	\item \textbf{string} is any sequence of characters that does not start with any function name, member function name or any of these symbols: \textcolor{red}{\textbf{\{ , \% \$}} and does not contain linebreak
 \end{itemize}
 
+\subsection{Syntax details}
+
 \paragraph{Expressions}
-Expression is a function call, member function call, string or list definition. Expressions are evaluated before assignments. This evaluation typically produces a new value of type string that contains the result of the evaluation. If an expression is called by itself, the console prints the return value.
+Expression is a function call, member function call, string or list definition. Expressions are evaluated before assignments. This evaluation typically produces a new value that contains the result of the evaluation. If an expression is called by itself, the console prints the return value.
+
+\paragraph{Object} 
+An object is a piece of data. 
 
 \paragraph{Variables}
-Variables are used to store objects. Variable can be any string that starts with \textbf{\$} and does not contain whitespace or a dot.
+Variables are used to store objects. Variable name can be any string that does not contain whitespace or a dot. To access a variable (create variable or use existing variable), use this syntax:
 \begin{verbatim}
 	$<variableName>
 \end{verbatim}
 
 \paragraph{Assignment}
-Assignments save <expression> return value to an <variable>. If the variable does not exist, it creates it. This is done using '=' operator.
 \begin{verbatim}
 	<variable> = <expression>
 \end{verbatim} 
-
+Assignments save <expression> return value to an <variable>. This is done using '=' operator. If the variable does not exist, an assignment creates a new variable.
 
 \paragraph{Functions}
 Function calls consist of the name of the function followed by comma-separated arguments enclosed in a pair of parentheses. 
@@ -404,20 +461,19 @@ Function calls consist of the name of the function followed by comma-separated a
 \end{verbatim}
 
 \paragraph{Comments}
-You can add comments to your JASL code by the means of line comments. Every line that should be a comment starts with the \textbf{\%} sign. Everything that follows the percent sign will not be parsed and the whole line will be skipped. 
+You can add comments to your JASL code by the means of line comments. This means that only a whole line can be a comment. Commenting at the end of a non-comment line is not possible. Every comment starts with the \textbf{\%} sign as the first character. Everything that follows the percent sign will not be parsed and the whole line will be skipped. 
 \begin{verbatim}
 	%<commentString>
 \end{verbatim}
 
 \paragraph{Help}
-Help for the JASL syntax can be displayed with command \textbf{help} while \textbf{helpLong} prints longer, more detailed version with descriptions of functions. 
+Help for the JASL syntax can be displayed with command: \textbf{help} while command: \textbf{helpLong} prints longer, more detailed version with descriptions of functions. 
 
 \subsection{Data types}
 Variables can hold objects of types: string, list or automaton.
-\paragraph{String} Used mainly to describe terminals or words. A string can be any sequence of characters that does not start with any function name, member function name or any of these symbols: \textbf{\{ , \% \$} and does not contain any linebreaks. 
-
+\paragraph{String} Used mainly to describe terminals, words or regular expressions. A string can be any sequence of characters that does not contain any linebreak and does not start with any function name, member function name or any of these symbols: \textbf{\{ , \% \$}.
 \paragraph{List}
-List in JASL is an ordered set of objects. Lists are enclosed in pairs of curly brackets. Elements are separated by commas. Elements can be any objects. Lists can be empty and they can be nested. They are used for defining automata. Some examples of lists are:
+List in JASL is an ordered set of elements. Lists are enclosed in pairs of curly brackets. Elements are separated by commas. Elements can be any objects. Lists can be empty and they can be nested. They are used for defining automata. Some examples of lists are:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL_snippet]
@@ -428,11 +484,11 @@ List in JASL is an ordered set of objects. Lists are enclosed in pairs of curly 
 \end{minipage}
 
 \paragraph{Automaton}
-Automaton type will be further explained in section \ref{subsec:automata-variables}
+This data type is explained in section \ref{subsec:automata-variables}
 
 \subsection{Functions}
 \label{sec:functions}
-In this section, I will describe the functions that are implemented to JASL syntax in more detail. The code examples use assignments to indicate return type.
+In this section, I will describe the functions that are implemented in JASL in more detail. The code examples use assignments to indicate return type.
 
 \subsubsection{execute}
 \label{subsec:execute}
@@ -440,16 +496,16 @@ In this section, I will describe the functions that are implemented to JASL synt
 	execute(|$path|)
 \end{lstlisting}
 
-Executes script on the specified path. The argument is a string that contains absolute or relative path to a file in filesystem. It uses already defined variables for the execution, which can update/overwrite them \ref{ex:exec-overwrite}.
+Executes script on the specified path. The argument is a string (or a variable that contains a string) that contains absolute or relative path to a file in filesystem. Execute uses already defined variables for the execution, and updates/overwrites them. This effect is demonstrated in section \ref{ex:exec-overwrite}.
 
-A script is a file that contains lines with JASL code. It is recommended to give JASL scripts the .jasl extension.
+A JASL script is a file that contains one or several lines of JASL code. It is recommended to give JASL scripts the .jasl extension.
 
 \subsubsection{fromCSV}
 \begin{lstlisting}[language = JASL_snippet]
 	|$M| = fromCSV(|$path|)
 \end{lstlisting}
 
-Returns new Automaton object, loaded from comma-separated csv file specified in the single argument of this function. The argument is a string that contains absolute or relative path to a file in filesystem. In the CSV file should be the automaton table.
+Returns new Automaton object, loaded from a comma-separated csv file specified in the single argument of this function. The argument is a string (or a variable that contains a string) that contains absolute or relative path to a file in filesystem. The CSV file should contain the automaton table as described in section \ref{table}.
 
 \subsubsection{getExample}
 \begin{lstlisting}[language = JASL_snippet]
@@ -472,51 +528,52 @@ Returns example automaton. The example automaton is described by this transition
 \label{fig:example_automaton_table}
 \end{table}
 
-And it's state diagram:
+And its state diagram:
 \begin{figure}[H]
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick,initial text=$ 	$, scale=0.6]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.5cm,semithick,initial text=$ $]
 	\tikzset{every state/.style={minimum size=0pt}}
-	\node[state, initial, initial where=left] (0) at (4.51,5.46) {$0$};
-	\node[state, initial, initial where=left] (1) at (8.17,0.69) {$1$};
-	\node[state, initial, initial where=above, accepting] (2) at (15.51,4.58) {$2$};
-	\node[state, accepting] (3) at (8.17,9.28) {$3$};
-	\node[state] (4) at (11.84,0.69) {$4$};
+	\node[state, initial, initial where=left] (0) {$0$};
+	\node[state, initial, initial where=left] (1) [below right of=0] {$1$};
+	\node[state] (4) [right of=1] {$4$};
+	\node[state, initial, initial where=above, accepting] (2) [above right of=4] {$2$};
+	\node[state, accepting] (3) [above of=0] {$3$};
+
 	\path
 		(0)
 
-			edge [bend right = 9] node {$a$} (1)
-			edge [bend left = 26] node {$b$} (2)
-			edge [bend left = 10] node {$b$} (3)
+			edge node {$a$} (1)
+			edge [bend left] node {$b$} (2)
+			edge node {$b$} (3)
 		(1)
 
-			edge [loop above] node {$b$} (1)
+			edge [loop below] node {$b$} (1)
 			edge  node {$b$} (4)
 		(2)
 
-			edge [bend left = 9] node {$b$} (0)
+			edge node {$b$} (0)
 		(3)
 
 			edge [loop above] node {$a,b$} (3)
 		(4)
 
-			edge [bend right = 6] node {$b$} (2)
-			edge [loop above] node {$a$} (4);
+			edge node {$b$} (2)
+			edge [loop below] node {$a$} (4);
 \end{tikzpicture}
-\caption{State diagram of the example automaton}
+\caption{State diagram of example automaton}
 \label{fig:example_automaton_diagram}
 \end{figure}
 
 \subsubsection{fromRegex}
 \label{fromRegex}
 \begin{lstlisting}[language = JASL_snippet]
-	|$automaton| = fromRegex(a*b(a+b)*)
+	|$automaton| = fromRegex(|$regex|)
 \end{lstlisting}
 
-Returns new Automaton object specified by regular expression passed in as an argument. The regular expression has to be in the format specified in chapter~\ref{sec:regex-def} or format described in section \ref{toRegex}.
+Returns new Automaton object specified by regular expression passed in as an argument. The argument is a string or a variable that contains a string. The regular expression has to be in the format specified in chapter~\ref{sec:regex-def} or format described in section \ref{toRegex}.
 
-There are limitations to this function. It works only with single character long terminals. Characters cannot be escaped, so symbols '\textbf{(}', '\textbf{)}', \textbf{\{}, \textbf{\}}, '$\mathbf{\cdot}$' and '\textbf{*}' cannot be used as terminals. 
+There are limitations to this function. It works only with terminals that are a single character. Characters cannot be escaped, so symbols '\textbf{(}', '\textbf{)}', \textbf{\{}, \textbf{\}}, '$\mathbf{\cdot}$' and '\textbf{*}' cannot be used as terminals. 
 
-The JAutomata library uses a modified version of the algorithm from Melichar~p.86~Algorithm 2.107~\cite{melichar}, to create automata from regular expressions.
+The JAutomata library uses a modified version of the algorithm from \cite[p.86 algorithm 2.107]{melichar}, to create automata from regular expressions.
 
 \subsubsection{getTikzIncludes}
 \label{subsec:getTikzIncludes}
@@ -524,9 +581,9 @@ The JAutomata library uses a modified version of the algorithm from Melichar~p.8
 	getTikzIncludes()
 \end{lstlisting}
 
-Returns \TeX code to use TikZ package and libraries necessary for diagrams of automata to work.
+Returns the \TeX includes needed, in order to use TikZ and its libraries that are necessary for diagrams of automata to work.
 
-These are:
+This code is:
 \begin{verbatim}
 	\usepackage{tikz}
 	\usetikzlibrary{shapes,angles,calc,quotes,arrows,automata,positioning}
@@ -536,8 +593,8 @@ These are:
 \label{subsec:automata-variables}
 To define an automaton you need to use the Automaton function. This function accepts a single parameter: nested list $L = \{l_s, l_1, l_2, \ldots, l_n\}, n = |Q|$, where $Q$ is the set of states of the automaton we want to define.  Elements of list $L$ are:
 \begin{itemize}
-	\item disjoint list of terminals: $l_s = \{t_1, t_2, \ldots, t_k\}, t_i \in \Sigma, i = 1\ldots |\Sigma|$
-	\item n lists where each list $l_i = \{\text{IO}, q_i, \delta(q_i, t_1), \delta(q_i, t_2), \ldots, \delta(q_i, t_k)\}$, where each of $\delta(q_i, t_j)$ is a list of target states and $IO$ is defined as: 
+	\item disjoint list of all terminals in $\Sigma$.
+	\item n lists where each list $l_i = \{\text{IO}, q_i, \delta(q_i, t_1), \delta(q_i, t_2), \ldots, \delta(q_i, t_k)\}, \forall q_i \in Q, k = |Q|$, where $IO$ is defined as: 
  	
 	$IO = 
 		\begin{cases}
@@ -591,7 +648,7 @@ So the argument to construct this automaton is:
 	{{a,b},{<>,0,{},2},{>,1,0,{1,2}},{<,2,{1,2,3},1},{3,3,{}}}
 \end{lstlisting}
 
-The automaton specified by the transition table is NFA automaton. It is created by using the Automaton constructor. The definition of the nested list can be split into multiple list variables for the sake of clarity. 
+The automaton specified by the transition table is NFA automaton. It is created by using the Automaton constructor. The definition of the nested list can be split into multiple list variables for the sake of clarity. We can also omit empty lists from the end of each row. This is demonstrated on lines 5-8:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
@@ -599,12 +656,15 @@ The automaton specified by the transition table is NFA automaton. It is created 
 	|$row0|  = {<>,0,{},2}
 	|$row1|  = {>,1,0,{1,2}}
 	|$row2|  = {<,2,{1,2,3},1}
+	% The full definition of row 3:
 	|$row3|  = {3,3,{}}
+	% Shortened definition of row 3:
+	|$row3| = {3,3}
 	
-	% Now we can define the nested list:
+	% Now we define the nested list:
 	|$nestedList| = {|$alphabet|, |$row0|, |$row1|, |$row2|, |$row3|}
     
-	% And now we can define an automaton:
+	% Finally, we can define an automaton:
 	|$automaton| = Automaton(|$nestedList|)
 \end{lstlisting}
 \end{minipage}
@@ -617,13 +677,10 @@ ENFA automata can have $\varepsilon$-transitions. These are defined using keywor
 
 \subsection{Member functions}
 \label{subsec:member-functions}
-Member function (method) is a function called on an object saved in a variable. There are no member functions for objects of type list. It can be invoked as follows:
+Member function is a function called on an object saved in a variable. There member function for types string and automaton. These can be invoked as follows:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL_snippet]
-	% If the function returns some value	
-	|$returnVal| = |$variable|.functionName(<list of args>)	
-	% If the function does not return any values
 	|$variable|.functionName(<list of args>)
 \end{lstlisting}
 \end{minipage} 
@@ -640,14 +697,14 @@ Note that member function calls can be chained on one line:
 \end{lstlisting}
 \end{minipage}
 
-There is only one member function defined for string type objects:
+String objects have only the \textbf{save} member function:
+
 \subsubsection{save}
 \begin{lstlisting}[language = JASL_snippet]
 	|$myString|.save(|$path|)
 \end{lstlisting}
 
-Saves string saved in the variable \$myString to document at \$path. If the document does not exist, it creates it. If the document already exists, it appends the string to the end of the document.
-
+Saves string saved in the variable \$myString to file at \$path. If the file does not exist, it creates it. If the file already exists, it appends the string to the end of the file. The argument is a string (or a variable that contains a string), that specifies a file in filesystem.
 
 What follows is a list of member functions for automata objects. The notation for examples is the same as in section~\ref{sec:functions}
 
@@ -658,35 +715,64 @@ What follows is a list of member functions for automata objects. The notation fo
 
 Returns \textit{true} if automaton $M$ (saved in variable \$M) accepts word passed in argument ($w \in L(M)$). It outputs \textit{false} otherwise. The argument of this function can be a string or a list of terminals. If the argument is of type string, it is parsed character by character into terminals. Note, that if you have an automaton that has any terminals with more than one character, you cannot use the variant with the argument of type string. In that case you need to use a list as an argument.
 
+Note, that this function works even if $w \not \in \Sigma^*$, where $\Sigma$ is the alphabet of automaton $M$. In that case it returns \textit{false}.
+
 \subsubsection{equals}
 \begin{lstlisting}[language = JASL_snippet]
 	|$M1|.equals(|$M2|)
 \end{lstlisting}
 
-Returns \textit{true} if $L(M1) = L(M2)$. It outputs \textit{false} otherwise. In other words this function checks, whether two automata accept the same language. 
+Returns \textit{true} if $L(M_1) = L(M_2)$ (if $M_1$ is equivalent to $M_2$). It outputs \textit{false} otherwise. In other words this function checks, whether two automata accept the same language. 
 
 \subsubsection{reduce}
 \begin{lstlisting}[language = JASL_snippet]
 	|$M2| = |$M|.reduce()
 \end{lstlisting}
 
-Returns reduced automaton $M2$. Note that this function creates a new automaton object, so the original automaton remains unchanged.
+Returns new automaton $M_2$ that is the reduced version of automaton $M$. Note that this function creates a new automaton object, so the original automaton remains unchanged. 
+
+If the automaton $M$ is an ENFA automaton or an NFA automaton, it is first converted to DFA automaton, before the reduction. All of the described operations are implemented using respective algorithms from \cite{demlova}.
 
 \subsubsection{toCSV}
 \begin{lstlisting}[language = JASL_snippet]
 	|$M|.toCSV(|$path|)
 \end{lstlisting}
 
-Creates/overwrites csv file on the path specified by the argument. The argument is a string that contains absolute or relative path to a file in the filesystem. In the created CSV file there is the transition table of the automaton.
+Exports automaton $M$ to CSV format. It creates/overwrites csv file on the path specified by the argument. The argument is a string that contains absolute or relative path to a file in the filesystem. The created CSV file contains the transition table of the automaton $M$.
+
+\subsubsection{toDot}
+\label{subsec:toDot}
+\begin{lstlisting}[language = JASL_snippet]
+	|$M|.toDot(neato)
+\end{lstlisting}
+
+Outputs attributed dot code (described in chapter \ref{drawing-images}), that contains a description of the automaton state diagram image. It accepts one, optional argument. The argument is the layout (engine) that Graphviz will use to organize the graph. When no layout is specified, \textbf{dot} is used as a default. Possible layouts are \textbf{circo}, \textbf{neato}, \textbf{dot} and \textbf{twopi}. 
 
 \subsubsection{toPNG}
 \begin{lstlisting}[language = JASL_snippet]
 	|$M|.toPNG(|$path|, circo)
 \end{lstlisting}
 
-Creates/overwrites png file on the path specified by the argument. The argument is a string that contains absolute or relative path to a file in the filesystem. The png contains an image of the state diagram of the automaton $M$. 
+Exports automaton $M$ to PNG format. It creates/overwrites png file on the path specified by the argument. The argument is a string that contains absolute or relative path to a file in the filesystem. The png contains an image of the state diagram of the automaton $M$. 
 
 The second argument of toPNG is optional. It is the layout (engine) that Graphviz will use to organize the graph. When no layout is specified, \textbf{dot} is used as a default. Possible layouts are \textbf{circo}, \textbf{neato}, \textbf{dot} and \textbf{twopi}.
+
+\subsubsection{toRegex}
+\label{toRegex}
+\begin{lstlisting}[language = JASL_snippet]
+	|$M|.toRegex()
+\end{lstlisting}
+
+Outputs regular expression describing language $L = L(M)$. Because no regular expression simplifier is implemented, the output of this function can be quite complicated. Nevertheless, it describes the language $L$. The output has a slightly different format from the definition in section \ref{sec:regex-def}. In the output, concatenation of languages generated by regular expressions $\mathbf{r_1}, \mathbf{r_2}$ is denoted by $\mathbf{r_1}\cdot \mathbf{r_2}$, instead of $\mathbf{r_1r_2}$. This format is also accepted by the fromRegex function \ref{fromRegex}.
+
+To convert automaton to regular expression the JAutomata library uses a modified algorithm described in \cite[p.98 algorithm 2.120]{melichar}.
+
+\subsubsection{toSimpleDot}
+\begin{lstlisting}[language = JASL_snippet]
+	|$M|.toSimpleDot()
+\end{lstlisting}
+
+Outputs dot code, that contains a description of the automaton state-diagram image. As opposed to \hyperref[subsec:toDot]{toDot} function, the dot code is not attributed, so it does not contain positions of elements.
 
 \subsubsection{toTexTable}
 \begin{lstlisting}[language = JASL_snippet]
@@ -695,46 +781,32 @@ The second argument of toPNG is optional. It is the layout (engine) that Graphvi
 
 Outputs string containing \TeX code to display the transition table of automaton $M$. 
 
-\subsubsection{toRegex}
-\label{toRegex}
-\begin{lstlisting}[language = JASL_snippet]
-	|$M|.toRegex()
-\end{lstlisting}
-
-Outputs regular expression describing language $L = L(M)$. Because no regular expression simplifier is implemented, the output of this function can be quite complicated. Nevertheless, it describes the language $L$. The output has a slightly different format from the definition in section \ref{sec:regex-def}. In the output, concatenation of regular expressions $\mathbf{r_1}, \mathbf{r_2}$ is denoted by $\mathbf{r_1}\cdot \mathbf{r_2}$, instead of $\mathbf{r_1r_2}$. This format is also accepted by the fromRegex function \ref{fromRegex}.
-
-To convert automaton to regular expression the JAutomata library uses a modified algorithm described in Melichar~p.98~Algorithm~2.120~\cite{melichar}.
-
-\subsubsection{toDot}
-\label{subsec:toDot}
-\begin{lstlisting}[language = JASL_snippet]
-	|$M|.toDot(neato)
-\end{lstlisting}
-
-Outputs dot code, that contains a description of the automaton state-diagram image. It accepts one, optional argument. The argument is the layout (engine) that Graphviz will use to organize the graph. When no layout is specified, \textbf{dot} is used as a default. Possible layouts are \textbf{circo}, \textbf{neato}, \textbf{dot} and \textbf{twopi}. 
-
-\subsubsection{toSimpleDot}
-\begin{lstlisting}[language = JASL_snippet]
-	|$M|.toSimpleDot()
-\end{lstlisting}
-
-Outputs dot code, that contains a description of the automaton state-diagram image. As opposed to \hyperref[subsec:toDot]{toDot} function, the dot code does not contain positions of elements, because it was not run through Graphviz yet. 
-
 \subsubsection{toTikz}
+\label{to-tikz-conversion}
 \begin{lstlisting}[language = JASL_snippet]
 	|$M|.toTikz(dot)
 \end{lstlisting}
 
-Outputs TikZ code to display the state diagram of automaton $M$. It accepts one parameter, that is the layout (engine) graphviz will use to organize the graph. When no layout is specified, \textbf{dot} is used as a default. Possible layouts are \textbf{circo}, \textbf{neato}, \textbf{dot} and \textbf{twopi}. It is recommended not to specify this argument (hence use dot as an engine), because it mostly outputs the nicest results out of the options. Note that you need to add appropriate includes to your \TeX code. You can get these using the \hyperref[subsec:getTikzIncludes]{getTikzIncludes} function.
+Outputs TikZ code to display the state diagram of automaton $M$. It accepts one parameter, that is the layout (engine) Graphviz will use to organize the graph. When no layout is specified, \textbf{dot} is used as a default. Possible layouts are \textbf{circo}, \textbf{neato}, \textbf{dot} and \textbf{twopi}. It is recommended not to specify this argument (hence use \textbf{dot} as an engine), because it generally outputs the nicest results out of the options. Note that you need to add appropriate includes to your \TeX code. You can get these using the \hyperref[subsec:getTikzIncludes]{getTikzIncludes} function.
 
-\subsubsection{union}
+\subsubsection{complement}
 \begin{lstlisting}[language = JASL_snippet]
-	|$M3| = |$M1|.union(|$M2|)
+	|$M2| = |$M1|.complement()
 \end{lstlisting}
 
-Outputs new automaton $M_3$ that accepts union of languages accepted by automata $M_1, M_2$. It accepts one argument of type automaton.
+Returns automaton that accepts language, that is the complement to the language of the original automaton.
 \begin{equation*}
-L(M_3) = L(M_1) \cup L(M_2)
+	L(M_2) = \overline{L(M_1)}
+\end{equation*}
+
+\subsubsection{concatenation}
+\begin{lstlisting}[language = JASL_snippet]
+	|$M3| = |$M1|.concatenation(|$M2|)
+\end{lstlisting}
+
+Outputs new automaton $M_3$ that accepts the concatenation of languages accepted by automata $M_1, M_2$. It accepts one argument of type automaton.
+\begin{equation*}
+	L(M_3) = L(M_1)L(M_2)
 \end{equation*}
 
 \subsubsection{intersection}
@@ -757,41 +829,30 @@ Output new automaton $M_2$ such that:
 	L(M_2) = L(M_1)^*
 \end{equation*}
 
-\subsubsection{complement}
+\subsubsection{union}
 \begin{lstlisting}[language = JASL_snippet]
-	|$M2| = |$M1|.complement()
+	|$M3| = |$M1|.union(|$M2|)
 \end{lstlisting}
 
-Returns automaton that accepts language, that is the complement to the language of the original automaton.
+Outputs new automaton $M_3$ that accepts union of languages accepted by automata $M_1, M_2$. It accepts one argument of type automaton.
 \begin{equation*}
-	L(M_2) = \overline{L(M_1)}
+L(M_3) = L(M_1) \cup L(M_2)
 \end{equation*}
-
-\subsubsection{concatenation}
-\begin{lstlisting}[language = JASL_snippet]
-	|$M3| = |$M1|.concatenation(|$M2|)
-\end{lstlisting}
-
-Outputs new automaton $M_3$ that accepts the concatenation of languages accepted by automata $M_1, M_2$. It accepts one argument of type automaton.
-\begin{equation*}
-	L(M_3) = L(M_1)L(M_2)
-\end{equation*}
-
 
 \subsubsection{renameState}
 \begin{lstlisting}[language = JASL_snippet]
-	|$M1|.renameState(0, 2a)
+	|$M|.renameState(q, p)
 \end{lstlisting}
 
-Renames state of caller automaton. This function accepts two arguments. The old state name as first and the new state name as second argument. It fails if the original state is not found in the automaton or if the new name is already taken by some other state of the automaton. This function modifies caller automaton object.
+Renames state $q$ of automaton $M$ to $p$. This function accepts two arguments. The old state name as first and the new state name as second argument. It fails if the original state is not found in the automaton or if the new name is already taken by some other state of the automaton. This function modifies automaton object saved in variable \$M.
 
 
 \subsubsection{renameTerminal}
  \begin{lstlisting}[language = JASL_snippet]
-	|$M1|.renameTerminal(a, css)
+	|$M|.renameTerminal(a, b)
 \end{lstlisting}
 
-Renames terminal of caller automaton. This function accepts two arguments. The old temrinal name as first and the new terminal name as second argument. It fails if the original terminal is not found in the automaton or if the new name is already taken by some other terminal of the automaton. Also, you cannot use 'eps' or $\varepsilon$ as a terminal because that is a keyword of epsilon transition. You cannot use this function to add or remove epsilon transitions from the table. This function modifies caller automaton object.
+Renames terminal $a$ of automaton $M$ to $b$. This function accepts two arguments. The old temrinal name as first and the new terminal name as second argument. It fails if the original terminal is not found in the automaton or if the new name is already taken by some other terminal of the automaton. Also, you cannot use 'eps' or $\varepsilon$ as a terminal because that is a keyword of epsilon transition. You cannot use this function to add or remove epsilon transitions from the table. This function modifies automaton object saved in variable \$M.
 
 \subsection{Consequences of string as default data type}
 JASL language does not use "" to define strings as most programming languages do. This has an interesting side effect: If a name of a function is mistyped, the whole expression is evaluated as a string:
@@ -805,28 +866,31 @@ frmRegex(a*babb*a)
 \end{minipage}
 
 \chapter{Details of Implementation}
-In this chapter, I will describe various details of the implementation and some problems that I found when implementing the application.
+In this chapter, I will describe various details of the implementation and some problems that I found when implementing the application. The programmer documentation is present in the code in the form of a javadoc.
 
 \section{Used technology}
 \subsection{JAutomata}
-JASL interpreter needed some backend that would execute algorithms on automata and which would house the automata themselves. I developed \textbf{jautomata} library just for this reason. It is a library that allows the user to define automata and execute various operations on them. Because I wrote the library, I had the source code and I could make certain changes to the way the library works. For example, I had to fix some bugs that were in the CSV loading code and I had to implement new constructor functions for the Automaton object. For this reason, I decided to work with the code directly and not to pack it into separate .jar file. 
+JASL interpreter needed some backend that would implement automata and the operations executed on them. I developed \textbf{JAutomata} library just for this reason. It is a library that allows the user to define automata and execute various operations on them. Because I wrote the library, I had the source code, in-depth knowledge about inner workings and I could make changes to the way the library works. 
 
-The \textbf{jautomata} library was developed by test-driven development. This meant that most of the functionality in the library was already unit-tested so I could rely on the algorithms to work properly. 
+I had to fix some bugs that were in the CSV loading code, finishe the regex conversions and I had to implement new constructor functions for the Automaton object. For this reason, I decided to work with the code directly and not to pack it into separate .jar file. 
+
+The \textbf{JAutomata} library was developed by test-driven development. This meant that most of the functionality in the library was already unit-tested so I could rely on the algorithms to work properly. 
 
 \subsubsection{Acceptor object}
 When I wrote the library I encountered an interesting problem with word accepting. Previously I used a function that would use Java objects like HashMaps and Lists to find out if a word was accepted by the automaton. While working on the library I was concerned about the speed of this operation. 
 
-I found an algorithm for bit-vector implementation of running an $\varepsilon$-NFA automaton \cite{acceptor-algorithm}. I implemented this algorithm in AutomatonAcceptor object. Theoretically, it should be much faster, than the original solution, because it did not use any objects. Computers generally do bitwise operations very fast, so I thought that this would be much faster than my previous version. I tested both versions on multiple automata and various lengths of words. To my surprise, the operation got actually slower when using the newly implemented algorithm. The object-oriented way was faster, even on automata with fewer than 32 states. 
+I found an algorithm for bit-vector implementation of running an ENFA automaton \cite{acceptor-algorithm}. I implemented modified version of this algorithm in AutomatonAcceptor object. I intended to use the \textit{long} datatype to hold the bitmaps. Java's \textit{long} is 64-bit long, so I could use AutomatonAcceptor object on any automaton with $|Q| \leq 64$. 
 
-I came to the conclusion that the bitwise algorithm was slower, because of Java's inner workings. This algorithm is much faster when implemented in C++. In the final version of the library, I used the object-oriented way.
+Theoretically, it should be much faster, than the original solution, because it did not use any objects. Computers generally do bitwise operations very fast, so I thought that this would be much faster than my previous version. I tested both versions on multiple automata and various lengths of words. To my surprise, the operation actually got a bit slower (about $10\%$) when using the newly implemented algorithm. The object-oriented way faster, even on automata with fewer than 32 states. 
+
+I came to the conclusion that the bitwise algorithm was slower, because of Java's inner workings and great optimizations on object-oriented approach. This algorithm is much faster when implemented in C++. In the final version of the library, I used the object-oriented way.
 
 \subsubsection{Automaton types}
-The jautomata library distinguishes between deterministic, non-deterministic and epsilon non-deterministic Finite Automata. In the library is an object for each of those types. I originally implemented separate constructor functions for these types to the JASL language, but soon I realized that functionally they were indistinguishable from each other. Because of that, I refactored the language to have only one constructor function for all automata. Because both NFA and DFA automata are special cases of ENFA automaton, I use ENFA object for all automata defined in JASL except for reduced automata. The user of JASL cannot distinguish between inner types of automaton.
-
+The JAutomata library distinguishes between deterministic, non-deterministic and epsilon non-deterministic Finite Automata. In the library is an object for each of those types. I originally implemented separate constructor functions for these types to the JASL language, but soon I realized that functionally they were indistinguishable from each other. Because of that, I refactored the language to have only one constructor function for all automata. Because both NFA and DFA automata are special cases of ENFA automaton, I used ENFA object for all automata defined in JASL except for reduced automata. The user of JASL cannot distinguish between inner types of automaton. This could be re-implemented in the future, if users request it as a feature.
 
 \subsection{Graphviz}
 
-Graphviz~\cite{graphviz} is an open source tool for graph visualization. I used graphviz to organize state diagrams of automata. Graphviz uses dot language to describe graphs. It has several output formats which include png image, plain text or even dot code. The user can pass in dot code where only a couple attributes are specified (nodes, edges, colors of the edges, \ldots). Graphviz will output dot code with all attributes specified (node position, size, edge anchor points, \ldots).  JASL interpreter uses graphviz to get PNG images and to get layouts for getTikz conversions. More on that in section \ref{sec:problems_graphviz}.
+Graphviz~\cite{graphviz} is an open source tool for graph visualization. I used Graphviz to organize state diagrams of automata. Graphviz uses dot language to describe graphs. It has several output formats which include png image, plain text or even dot code. The user can pass in only a couple attributes (nodes, edges, colors of the edges, \ldots) and Graphviz will output dot code with all attributes specified (node position, size, edge anchor points, \ldots). JASL interpreter uses Graphviz to get PNG images and to get layouts for \hyperref[to-tikz-conversion]{toTikz} conversions. More on that in section \ref{sec:problems_graphviz}.
 
 \subsection{Graphviz-java library}
 Graphviz-java~\cite{graphviz-java} is a library that parses dot code into objects in Java and vice versa. I used Graphviz-java for parsing and extracting attributes from dot code. I encountered several problems with this library, more on that in section \ref{subsec:graphviz-java-problems}
@@ -842,23 +906,23 @@ TikZ has a library made for drawing automata. This library is very well document
 The syntax of the code to draw automata in TikZ is very well described in this tutorial:~\cite{tikz-tut}
 
 \section{Interpreter implementation}
-One of the main goals of this project was to create live console environment. There are some libraries for Java that can create such environment, but they do not allow the user to define his own syntax. After searching the internet for a suitable framework, I decided to implement the console environment myself. 
+One of the main goals of this project was to create live console environment. There are libraries for Java that can create such environment, but they do not allow the user to define his own syntax. After searching the internet for a suitable framework, I decided to implement the console environment myself. 
 
-Due to its nature, the live console environment needs to handle many exceptions. Exceptions could occur because of non-existent file, invalid CSV files and syntax errors of the JASL language. I created two custom exceptions called \textit{SyntaxException} (further shortened to \textit{SE}) and \textit{ParsingException} (further shortened to \textit{PE}. These exceptions are used all throughout the interpreter code to distinguish between syntax errors and incorrect parsing methods.
+Due to its nature, the live console environment needs to handle many exceptions. Exceptions could occur because of a non-existent file, a corrupted CSV file or a syntax error in a command. I created two custom exceptions: \textit{SyntaxException} (further shortened to \textit{SE}) and \textit{ParsingException} (further shortened to \textit{PE}. These exceptions are used all throughout the interpreter code to distinguish between syntax errors and incorrect parsing methods.
 
 \subsection{Details of parsing code}
-The code is parsed line by line by the \textit{parseLine} function. There are two fundamental types of lines in JASL. A line can be either an expression or an assignment. The \textit{parseLine} function attempts to parse as an assignment first, by calling the \textit{parseAssignment} function. If it was not an assignment, \textit{parseAssignment} function throws \textit{PE}. Then the line is parsed as an expression by the \textit{parseExpression} function.
+Every line of the code is parsed by the \textit{parseLine} function. There are two fundamental types of lines in JASL. A line can be either an expression or an assignment. The \textit{parseLine} function attempts to parse as an assignment first, by calling the \textit{parseAssignment} function. If it was not an assignment, \textit{parseAssignment} function throws \textit{PE}. Then the line is parsed as an expression by the \textit{parseExpression} function.
 
 \paragraph{Parsing an assignment}
-As mentioned above, assignments in jasl have the form of:
+As mentioned above, assignments in JASL have the form of:
 \begin{verbatim}
 	<variable> = <expression>
 \end{verbatim}
 
-If the = operator have been parsed correctly, all the following errors will result in throwing \textit{SE} instead of \textit{PE}.  
+If the '=' operator have been parsed correctly, all the following errors will result in throwing \textit{SE} instead of \textit{PE}.  
 
 \paragraph{Parsing an expression}
-Expressions in JASL can be of four types, which are evaluated by parsing methods in order:
+Expressions in JASL can be of three types, which are evaluated by respective parsing methods in this order:
 \begin{enumerate}
 	\item Member function of an variable call
 	\item List definition
@@ -867,7 +931,9 @@ Expressions in JASL can be of four types, which are evaluated by parsing methods
 
 If a parsing method failed before any determining parameters were found, it throws \textit{PE}. Then the expression is parsed by the next parsing method. If all of the parsing methods fail, then the expression is evaluated as a string. 
 
-I wanted to develop a way to make JASL more compact so that the scripts do not have to be unnecessarily long and verbose. The first step was to allow in-place constructors. To achieve this I added two features to the interpreter: in-place constructors and member function chaining.
+\subsection{Enhancing syntax}
+
+I wanted to develop a way to make JASL more compact so that the scripts do not have to be unnecessarily long and verbose. To achieve this I added two features to the interpreter: in-place constructors and member function chaining.
 
 \subsubsection{In-place constructors}
 In-place constructors allow the user to define and immediately use objects in expressions. I solved this by evaluating expressions recursively. For example, if a function call is being evaluated, the interpreter splits the function call into $n+1$ parts: function name and it's $n$ arguments. On each of those $n$ arguments, the interpreter calls evaluate function again. This allows the user to write condensed code where it is needed. It can also reduce unnecessary variable declarations which could potentially be quite problematic in larger programs.
@@ -886,7 +952,7 @@ In-place constructors allow the user to define and immediately use objects in ex
 
 \subsubsection{Member function chaining}
 \label{chaining_impl}
-The second step was to make chaining of member function calls possible. Calling a member function of an object in JASL results in new object. This feature allows the user to call member functions on these resulting objects on the same line as they were defined. Again, this reduces the number of unnecessary variables in the environment.
+The second step was to make chaining of member function calls possible. Calling a member function of an object in JASL often results in new object. This feature allows the user to call member functions on these resulting objects on the same line as they were defined. Again, this reduces the number of unnecessary variables in the environment.
 
 To do this, the interpreter splits the expression into member function calls and then evaluates them one by one. The actual implementation of this process is rather intriguing. 
 
@@ -898,17 +964,17 @@ We run evaluate on this expression.
 
 Evaluate first splits the expression into three parts:
 \begin{itemize}
-	\item \textbf{V} - variable, which in this case is \$automaton
-	\item \textbf{F} - first member function call, which in this case is .reduce()
-	\item \textbf{R} - rest of the expression, which in this case is .toPNG(test.png)
+	\item \textbf{V} - variable, which in this case is: \textit{\$automaton}
+	\item \textbf{F} - first member function call, which in this case is: \textit{.reduce()}
+	\item \textbf{R} - rest of the expression, which in this case is: \textit{.toPNG(test.png)}
 \end{itemize}
 
-Then it evaluates expression \textbf{VF}, which in this case is \$automaton.reduce(). It saves the result in temporary variable \textbf{T}. 	
-JASL uses \$TEMP as a temporary variable. At last, it runs evaluate on expression \textbf{TR}, which in this case is \$TEMP.toPNG(test.png).
+Then it evaluates expression \textbf{VF}, which in this case is: \textit{\$automaton.reduce()}. It saves the result in temporary variable \textbf{T}. 	
+JASL uses \$TEMP as a temporary variable. At last, it runs evaluate on expression \textbf{TR}, which in this case is: \textit{\$TEMP.toPNG(test.png)}.
 
 In each step, the interpreter evaluates the front-most function call. Each time it saves the result in temporary variable \textbf{\$TEMP} and removes the first function call from the expression. Then it replaces this function call by \$TEMP and runs the evaluation again on the shortened expression. 
 
-As a side-effect, it would overwrite \$TEMP variable. As a countermeasure added a little stack-frame just for this variable. Adding a little stack-frame just for this variable solved this issue. This stack frame was implemented using Java's native stack-frame. The implementation is simple because the algorithm uses recursion to evaluate chained function calls. However, this solution has a little flaw. If one of the member functions has a syntax error in it, the interpreter throws an InvalidSyntaxException and the stack frame will be lost. It is not recommended using \$TEMP as a variable name. 
+As a side-effect, it would overwrite \$TEMP variable. As a countermeasure added a little stack-frame just for this variable. This stack frame was implemented using Java's native stack-frame. The implementation is simple because the algorithm uses recursion to evaluate chained function calls. However, this solution has a flaw: If one of the member functions has a syntax error in it, the interpreter throws an \textit{SyntaxException} and the original stack frame will be lost (hence the original contents of \$TEMP will be lost). It is not recommended using \$TEMP as a variable name. 
 
 The chaining feature was added to the JASL language after the main framework had been completed and this process was the easiest to implement. The way it is implemented is taxing on computation time because of all the unnecessary variable name parsing and it should be upgraded in the future. 
 
@@ -927,37 +993,38 @@ The chaining feature was added to the JASL language after the main framework had
 
 \section{Problems with Graphviz-java}
 \label{subsec:graphviz-java-problems}
-I thought that using Graphviz-java library would save me a lot of work on parsing dot code. Graphviz-java is originally meant to be used to construct graphs by the means of Java objects, then convert those object to dot code and vice versa. However, I wanted something different from the library. I wanted to use it only for parsing of the dot code. Then, I wanted to extract only layout information (x and y coordinates) from the objects. 
+I thought that using Graphviz-java library would save me a lot of work on parsing of the dot code. Graphviz-java is originally meant to be used to construct graphs by the means of Java objects, then convert those object to dot code and vice versa. However, I wanted something different from the library. I wanted to use it only for parsing of the dot code. Then, I wanted to extract only layout information (x and y coordinates) from the objects. 
 
-Graphviz-java does not have any documentation on its classes or functions. So I had to reverse-engineer most of the fields of the object and their meaning, using Java reflection and debugger. Fortunately, I found the attributes in the classes created by graphviz-java and was able to extract them. 
+Graphviz-java does not have any documentation on its classes or functions. So I had to reverse-engineer most of the fields of the objects and the meaning of those fields, using Java reflection and debugger. Fortunately, I found the attributes in the classes created by graphviz-java and was able to extract them. 
 
-I struggled on one particular bug in Graphviz-java library related to knot points extraction of the edges. If dot code from Graphviz contained any edge that was long enough to have more than nine anchor points, it would linebreak the dot file in the middle of \textbf{pos} attribute. This caused Graphviz-java to parse it incorrectly. Fixing this issue made me think, whether using Graphviz-java was worth it in the first place.
+I struggled on one particular bug in Graphviz-java library related to knot points extraction of the edges. If dot code from Graphviz contained any edge that was long enough to have more than nine knot points in the spline, it would linebreak the dot file in the middle of \textbf{pos} attribute. This caused Graphviz-java to parse it incorrectly. Fixing this issue made me think, whether using Graphviz-java was worth it in the first place.
 
-So using graphviz-java for this use-case may not have been the best idea. It might have been easier to get plain text file as an output from Graphviz and parse it myself. 
+So using graphviz-java for this use-case may not have been the best idea. It might have been easier to get plain text file as an output from Graphviz and write my own parsing code. 
 
 \chapter{Drawing images}
+\label{drawing-images}
 Drawing state diagrams in such a way that they are readable and nice is a very complicated problem. Apart from special cases, removing edge crossings produces a better-looking image. This is a NP-hard problem as is shown in \cite{crossing-problem}.
 
-I used Graphviz to create the layout of the graph. It draws nice diagrams, but I needed to convert the output to TikZ code. To do that I instruct graphviz to output so-called attributed dot code. This reproduces the input with added information about the layout of the graph. The attributed dot code is then converted to TikZ code. 
+I used Graphviz to create the layout of the graph. It draws nice diagrams, but I needed to convert the output to TikZ code. To do that I instructed Graphviz to output so-called attributed dot code. This reproduces the input with added information about the layout of the graph. The attributed dot code is then converted to TikZ code. 
 
 \smartdiagramset{back arrow disabled=true}
 \smartdiagram[flow diagram:horizontal]{Automaton, Dot code, Graphviz, Attributed dot code, TikZ code}
 
-JASL creates dot code to draw the automaton, then it runs Graphviz on this code. Graphviz outputs attributed dot code. JASL then converts the attributed dot to TikZ code. However, from this conversion arise many problems. Problems with sizes of images, angle conversion or label positions. 
+First, JASL creates the dot code to draw the automaton, then it runs Graphviz on this code. Graphviz outputs attributed dot code. At last, JASL converts the attributed dot to TikZ code. However, many problems arose from this conversion. Some of these problems are described in next section.
 
 \section{Using Graphviz for layout output}
 \label{sec:problems_graphviz}
-One of the main problems of converting from dot code to TikZ code was the size of the output image. TikZ itself does not take care of page size. If input coordinates exceed page size, it will draw cropped image. I wanted the output of \textit{toTikz} conversion to fit on a regular A4 page so I needed a way to tell Graphviz the maximum dimensions of the output image. 
+One of the main problems of converting from dot code to TikZ code was the size of the output image. TikZ itself does not take care of page size. If input coordinates exceed page size, it will draw the image cropped. I wanted the output of \textit{toTikz} conversion to fit on a regular A4 page so I needed a way to tell Graphviz the maximum dimensions of the output image. 
 
 There are many attributes that you can specify in the dot file: styling of the edges, positions of nodes and many more \cite{dot-notation}. However, there are some attributes, that have no effect on the attributed dot code, because Graphviz often ignores some of the attributes to produce a better-looking image. 
 
-Size attribute is used to control the pixel size of output images. Graphviz copies size attribute to the attributed dot file, but it does not affect the coordinates of the elements. It is included to the attributed dot only to instruct the rendering engine on how to scale/orient the resulting image. JASL reads positions of elements from the attributed dot, so the size attribute does not have any effect on the resulting TikZ code.
+Size attribute is used to control the pixel size of output images. Graphviz copies the size attribute to the attributed dot file, but it does not affect the coordinates of the elements. It is included to the attributed dot only to instruct the rendering engine on how to scale/orient the resulting image. JASL reads positions of elements from the attributed dot, so the size attribute does not have any effect on the resulting TikZ code.
 
 The \textit{rankdir} attribute in the dot code allows the user to instruct Graphviz on the direction he wants the graph to grow in. As most publications use the portrait orientation, I tried to instruct Graphviz to prefer vertical growth. Using this setting, labels would often overlap with edges. Even without the overlaps I did not like these images so I discarded the idea and used horizontal growth instead. 
 
-The attributed dot file contains coordinates for all elements of the graph. However, these are in Graphviz coordinate system. I needed to convert these coordinates to TikZ coordinate system. I measured the maximum feasible width/height of TikZ image to fit regular A4 page. I tried using linear mapping, but for that, I would have to know the bounding box of the dot coordinates. Graphviz has bounding box attribute in the attributed dot file, that should specifies the bounding box of the image. Using this bounding box as mapping parameter, yielded distorted images.  
+The attributed dot file contains coordinates for all elements of the graph. However, these are in Graphviz coordinate system. To convert these coordinates to TikZ coordinate system, I measured the maximum feasible width/height of TikZ image to fit regular A4 page. I tried using linear mapping, but for that, I would have to know the bounding box of the dot coordinates. Graphviz has bounding box attribute in the attributed dot file, that should specifies the bounding box of the image. Using this bounding box as mapping parameter, resulted in distorted images.  
 
-Using minimum/maximum coordinates in each axis yielded visually better results even for larger graphs. As a side-effect, I lost the ratio between sizes of the elements and length of the edges. This means that the output TikZ code draws small graphs unnecessarily stretched. This is caused by mapping small image onto larger area. The following two images show png image generated by graphviz and the TikZ code result image in contrast with one another. 
+Using minimum/maximum coordinates in each axis yielded visually better results even for larger graphs. As a side-effect, I lost the ratio between sizes of the elements and length of the edges. This means that the output TikZ code draws small graphs unnecessarily stretched. This is caused by the mapping of small image to a larger area. The following figures show png image generated by Graphviz and the TikZ result image in contrast with one another. 
 
 \begin{figure}[H]
 \includegraphics[width=0.5\linewidth]{figures/not_stretched.png}
@@ -983,7 +1050,7 @@ Using minimum/maximum coordinates in each axis yielded visually better results e
 \label{fig:stretched_automaton}
 \end{figure}
 
-This unwanted effect could be one of the areas to work on in the future.~\ref{sec:coordinate_upgrades}
+This unwanted effect could be one of the areas to work on in the future (section \ref{sec:coordinate_upgrades}).
 
 \subsection{Graphviz layout engines}
 Graphviz has four main layout engines that can be used to draw automaton state diagrams:
@@ -1025,7 +1092,7 @@ We have an automaton $M$. This automaton has four states. These are the images o
 \label{fig:layout_diff_twopi}
 \end{figure}
 
-All of these engines have an interesting feature. They vary the size of nodes according to the number of incoming/outgoing edges. This effect is apparent on foregoing figures.
+Graphviz has an interesting feature. It varies the size of nodes according to the number of incoming/outgoing edges. This effect is apparent on foregoing figures.
 
 \section{Relative position model}
 \label{sec:relpos}
@@ -1038,13 +1105,12 @@ Originally, I wanted JASL to output TikZ code that would be the most easy for th
 	\node[state, accepting] (3) [below right of=1] 	{b1};
 \end{verbatim}
 
-This code can be quickly read and edited as opposed to absolute coordinates. TikZ allows nodes to be in eight different directions: above, above right, right, below right, below, below left, left, above left. Distance between nodes can be specified, but that clutters the code. TikZ places nodes on outer edge of a circle with diameter equal to the distance between nodes. There are only three types of edge shapes: bend left, bend right and straight. 
+This code can be quickly read and edited as opposed to absolute coordinates. TikZ allows nodes to be in eight different directions: above, above right, right, below right, below, below left, left, above left. Distance between nodes can be specified, but that clutters the code. TikZ places nodes on outer edge of a circle with diameter equal to the distance between nodes. One of the consequences of this feature is that sequence (below right, above right) does not give the same position as (right, right). There are only three types of edge shapes: bend left, bend right and straight. 
 
-Using simplifications of the relative position TikZ code poses several constraints on the layout generator. Graphviz does not have support for these types of constraints. Graphviz has no attribute for ideal edge length or grid alignment of nodes. So the only option is to calculate/approximate these positions. However, this approximation would destroy the layout completely at times. 
-%TODO Add example
+Using simplifications of the relative position TikZ code poses several constraints on the layout generator. Graphviz does not have support for these types of constraints. Graphviz has no attribute for ideal edge length or grid alignment of nodes. So the only option is to calculate/approximate these positions. However, this approximation destroys the layout completely at times. 
 
 \subsection{Relation chains}
-The relative model is easily editable, but only if the relations are connected right. The grouping of relations is a problem, because the program has to approximate, which nodes should be connected to which.
+The relative model is easily editable, but only if the relations are connected correctly. The grouping of relations is a problem, because the program has to approximate, which nodes should be connected to which.
 
 In this simple example, we have some graph, which is constructed using these relations:
 
@@ -1082,7 +1148,7 @@ We can visualize these relations like this:
 \end{tikzpicture}
 \end{figure}
 
-For some reason, we want to move nodes $1,4,5$ below node $2$. It is very easy, just by changing the relation of node $1$ to be: $1$ is below of $2$. The result will look like this:
+Suppose that we want to move nodes $1,4,5$ below node $2$. It is very easy, just by changing the relation of node $1$ to be: $1$ is below of $2$. The result will look like this:
 
 \begin{figure}[H]
 \centering
@@ -1132,7 +1198,7 @@ Now suppose we have these relations in the graph:
 \end{tikzpicture}
 \end{figure}
 
-Now it is much harder to do this simple operation because to produce the wanted result, we have to change the relation of three nodes: $1, 4, 5$. 
+Now it is much more complicated to do this simple operation because to produce the wanted result, we have to change the relation of three nodes: $1, 4, 5$. 
 
 Because we do not know, if and how the user wants to reorganize the output graph, there would have to be some utility, that would re-route the edges. Without this utility, the relation model would be of no use.
 
@@ -1140,7 +1206,7 @@ Because of these difficulties, I discarded the idea of relative positions and us
 
 \subsection{Edge angle calculation}
 \label{subsec:edge-angle}
-The graphviz output dot file specifies edge shapes in the pos attribute. This attribute contains coordinates of several knot points, specifying a spline curve. As stated in previous section, there are three possible shapes of edges in TikZ automata library: straight, bend left, bend right. Approximation to those three edge shapes in TikZ produced mostly illegible images. 
+The Graphviz output dot file specifies edge shapes in the pos attribute. This attribute contains coordinates of several knot points, specifying a spline curve. As stated in previous section, there are three possible shapes of edges in TikZ automata library: straight, bend left, bend right. Approximation to those three edge shapes in TikZ produced mostly illegible images. 
 
 The ultimate goal was to keep the TikZ code simple and easy to read. I decided to use the angles library for TikZ, that allows the user to specify the angle of the bend. The angle is a numeric value between $0^\circ$ and $360^\circ$, which specifies the angle $\alpha$ depicted in the following picture:
 
@@ -1160,7 +1226,7 @@ Bend left at $270^\circ$ produces the same output as bend right at $90^\circ$. I
 
 I defined an function $f$ in the code of the application, that outputs this angle as well as the edge orientation. It takes three arguments: $\vec{q_0}, \vec{q_1}, P$, where $q_0$ is the source node center, $q_1$ is the destination node center and $P$ is a set of spline knot points. Function $f$ should return an angle. If the angle is negative, the curve is to the right, if it is positive, the curve is to the left, otherwise, it is to the right. 
 
-Splines generated by graphviz are generally simple, mostly elliptical. I used this property to approximate the curve angle using the following function::
+Splines generated by Graphviz are generally simple, mostly elliptical. I used this property to approximate the curve angle using the following function::
 \begin{align*}
 	f(\vec{q_0}, \vec{q_1}, P) &= angle(\vec{q_1}, \vec{q_0}, \vec{p_*}) \cdot ((\vec{q_1} - \vec{q_0})\times sgn(\vec{p_*} - \vec{q_0})) \text{, where } \\
 	\vec{p_*} &= \argmax_{\vec{p} \in P} (angle(\vec{q_1}, \vec{q_0}, \vec{p})) \\
@@ -1170,9 +1236,9 @@ Splines generated by graphviz are generally simple, mostly elliptical. I used th
 
 This function outputs angle $\gamma$ between $q_0, q_1$ and point $\vec{p_*} \in P$, which maximizes $\gamma$. 
 
-While this function has good results when graphviz uses elliptical edges, it is not so good otherwise. Graphviz uses ellipses only if the edges are short. If the edge exceeds certain point, it will flatten the spline curve. In these cases, angles output by function $f$ are not optimal. 
+While this function has good results when Graphviz uses elliptical edges, it is not so good otherwise. Graphviz uses elliptical splines only if the edges are short. If the edge exceeds certain length, it will flatten the spline curve. In these cases, angles output by function $f$ are not optimal. 
 
-This function should be improved in the future \ref{par:angle-of-edges}
+This function can be improved in the future (see \ref{par:angle-of-edges}).
 
 \chapter{Examples of usage, practice, problems of testing}
 Here are some examples of usage of the \textbf{JASL} language: 
@@ -1205,7 +1271,7 @@ In order to define automaton $M_1$ in JASL language we define a few lists:
 	|$alphabet| = {a, b}
 	|$row0|  = {>, 0, {0,1}, 0}
 	|$row1|  = {1, {}, 2}
-	|$row2|  = {2, 3, {}}
+	|$row2|  = {2, 3}
 	|$row3|  = {<, 3, 3, 3}
     
 	% Now we can define an automaton:
@@ -1216,7 +1282,7 @@ In order to define automaton $M_1$ in JASL language we define a few lists:
 	% Accepted has value: false 
 	
 	% We can get regular expression describing the language L1:
-	|$reg| = |$M_1|.getRegex()
+	|$reg| = |$M_1|.toRegex()
 	% $reg has value: b*aa*b((bb*aa*b)*)a((a+b)*) 
 
 	% But does this regex really describe language L1? 
@@ -1232,10 +1298,8 @@ Note that we use nested lists for definitions of sets of target states. We can u
 
 \section{Defining an ENFA automaton}
 \label{sec:example_ENFA}
-Suppose we have a ENFA automaton $M_2$ that accepts language L such that:
-\begin{equation*}
-	\underline{r} = a^*+b^*, \hspace{1cm} L_{\underline{r}} = L = L(M_2) 
-\end{equation*}
+Suppose we have an ENFA automaton $M_2$ that accepts all words generated by regular expression: $a^* + b^*$.
+
 Such automaton can be described by this transition table:
 \begin{table}[H]
 \begin{ctucolortab}
@@ -1282,12 +1346,12 @@ Suppose we have automaton $M_3$. This automaton accepts language $L = L(M_3)$. T
 	\underline{r_2} = (a+b)^*ab^*, \hspace{1cm} L(M_3) = L_{\underline{r_2}} = L
 \end{equation*}
 
-We can use JASL to construct this automaton and create tex file to display it:
+We can use JASL to construct this automaton and create \TeX file to display it:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = JASL]
 	|$a| = fromRegex((a+b)*ab*)
-	% Tex document parts
+	% TeX document parts
 	|$class| = \documentclass{article}
 	|$includes| = getTikzIncludes()
 	|$beginning| = \begin{document}
@@ -1342,7 +1406,8 @@ After compiling image.tex file we get this image:
 
 \section{Example of a JASL script file}
 \label{ex:exec-overwrite}
-In this example, we can see the execution of JASL script file and the side effects of using 
+In this example, we can see the execution of JASL script file and the side effects of using execute function.
+
 Suppose we have a file append.jasl, that contains the code that will concatenate the language produced by regular expression: $ab^*a$ to language accepted by automaton saved in variable \textbf{\$i}. It will save the result to variable \textbf{\$j}. Such file could contain for example this code:
 
 \begin{minipage}{\linewidth}
@@ -1368,23 +1433,23 @@ We can check whether the function worked correctly:
 \end{lstlisting}
 \end{minipage} 
 
-The last command will print true to console. Note that by executing code in append.jasl we have overwritten anything that might be in the variable \$j. The user has to be aware of this side effect. Stack frames might be implemented later~\ref{sec:interpreter_upgrades}
+The last command will print true to console. Note that by executing code in append.jasl we have overwritten anything that might be in the variable \textbf{\$j}. The user has to be aware of this side effect. Stack frames might be implemented later~\ref{sec:interpreter_upgrades}
 
-\chapter{What to do next? Looking to the future}
+\chapter{Looking to the future}
 \label{todo}
 
-JASL and its interpreter does not yet implement some of the features that I would want it to. The ultimate goal of this application is to make tasks regarding automata simple. There are many quality-of-life improvements that yet wait to be implemented. I will describe some of those features in this chapter.
+JASL and its interpreter do not yet implement some of the features that I would want them to. The ultimate goal of this application is to make tasks regarding automata simple. There are many quality-of-life improvements that yet wait to be implemented. I will describe some of those features in this chapter.
 
 \section{JAutomata}
 The JAutomata library could implement other types of automata (Mealy, Moore, Push-down) because these types of automata are often used in practice. The implementation could use the structure of the project and its classes with minor tweaks. 
 
 \subsection{Operations over regular expressions}
-The regular expression format used in JAutomata library, which is also defined in this document differs from the format that is usually used in literature. It does not implement powers of regular expressions. The syntax for powers is simple:
+The regular expression format used in JAutomata library, which is also defined in this thesis differs from the format that is usually used in literature. It does not implement powers of regular expressions and positive iteration operator. 
 \subsubsection{Power of regular expression}
-Powers of regular expressions are often use to shorten regular expressions with repeating symbols.
+Powers of regular expressions are often used to shorten regular expressions with repeating symbols.
 
 \paragraph{Definition of power of regular expression}
-Suppose we have regular expression $r$ that describes language $L$. Then regular expression $r^i$ describes language $L^i$ which can be defined recursively as:
+Suppose we have regular expression $\mathbf{r}$ that describes language $L$. Then regular expression $\mathbf{r^i}$ describes language $L^i$ which can be defined recursively as:
 \begin{itemize}
 	\item $L^0 = \{\varepsilon\}$
 	\item $L^{n+1} = LL^{n}$
@@ -1393,19 +1458,21 @@ Suppose we have regular expression $r$ that describes language $L$. Then regular
 \subsubsection{Positive iteration}
 Another operator missing from the implementation is the positive iteration of regular expressions.
 
-\paragraph{Definition of positive iteration} Suppose we have a language $L$ that is described by regular expression $r$. Then regular expression $r^+$ describes language $L^+$ which is the positive iteration of the language $L$ and can be defined as:
+\paragraph{Definition of positive iteration} Suppose we have a language $L$ that is described by regular expression $\mathbf{r}$. Then regular expression $\mathbf{r^+}$ describes language $L^+$ which is the positive iteration of the language $L$ and can be defined as:
 \begin{equation*}
 L^+ = \bigcup_{i=1}^\infty L^i
 \end{equation*}
 
-Both of these operators are only shortened versions of regular expressions. For example, regular expression $r^+$ can be denoted by $rr^*$, without changing the resulting language.
+Both of these operators are only shortened versions of regular expressions. For example, regular expression $\mathbf{r^+}$ can be denoted by $\mathbf{rr^*}$, without changing the resulting language.
 
 \subsection{Regular expression simplifier}
-For the moment, the library is missing any regular expression simplifier. Problem of regular expression minimization is computationally hard (PSPACE-complete) as shown in~\cite{np-regex}. This could be implemented using already existing algorithms that yield "good" results~\cite{simplifying-regex}. 
+For the moment, the library is missing any regular expression simplifier. Problem of regular expression minimization is computationally hard (PSPACE-complete as shown in~\cite{np-regex}). This could be implemented using already existing algorithms that yield "good enough" results~\cite{simplifying-regex}. 
 
 \section{JASL}
+JASL could implement additional features to make the enhance the user experience. In this section I will focus on those improvements. 
+
 \subsection{JASL Syntax}
-JASL syntax could use some more advanced features. Such as: element extraction from a list or a string, user-defined functions, other data-types or allowing the user to use some of the more advanced features of JAutomata library. It could also make possible the modification of generated PNG images (colors of edges, size of the image, etc.). These changes would make JASL into a more flexible tool for automata operation.
+JASL syntax could use some more advanced features. Such as: element extraction from a list or a string, user-defined functions, other data-types or allowing the user to use some of the more advanced features of JAutomata library. It could also make possible the modification of generated PNG images (colors of edges, size of the image, etc.). These changes would make JASL more flexible for the user.
 
 Standardization of the syntax would help users that are used to working with regular programming languages. One example of such standardization would be encapsulation of strings in double quotes. This would allow for better exception handling and syntax error detection.
 
@@ -1418,9 +1485,10 @@ Examples of possible upgrades to the JASL interpreter are:
 	\item Implementing stack frames for script executions
 	\item Saving current workspace (state of all variables) to a file
 	\item Live preview of generated images
+	\item Live console code completion
 \end{itemize}
 
-Apart from stak frames, all of these upgrades are a quality-of-life improvements. For example the live preview of generated images would certainly enhance the user experience.
+Apart from stak frames, all of these upgrades are a quality-of-life improvements. For example the live preview of generated images would certainly enhance the user experience. Live code completion for the live console environment would probably require to implement custom console. 
 
 \subsection{Graph conversion}
 \label{sec:coordinate_upgrades}
@@ -1431,9 +1499,7 @@ As described in section~\ref{sec:problems_graphviz}, the current implementation 
 
 \paragraph{Angle of edges}
 \label{par:angle-of-edges}
-Upgrade of the function $f$, described in section \ref{subsec:edge-angle} would improve diagrams of automata with longer edges. This function should be implemented to cz.cvut.fel.horovtom.jasl.graphviz.DotToTex.getCurveAngle function. 
-
-Graphviz does not curve longer edges evenly. Such an edge can be seen on the following picture from state 0 to state 4.
+Upgrade of the function $f$, described in section \ref{subsec:edge-angle} would improve diagrams of automata with longer edges. This function should be implemented to \textbf{cz.cvut.fel.horovtom.jasl.graphviz.DotToTex.getCurveAngle} function. Graphviz does not curve longer edges evenly. Such an edge can be seen on the following picture from state 0 to state 4.
 
 \begin{figure}[H]
 \includegraphics[width=1\linewidth]{figures/not-round-edge.png}
@@ -1444,7 +1510,7 @@ Graphviz does not curve longer edges evenly. Such an edge can be seen on the fol
 When converting this automaton to TikZ, we can see, that the current function does a decent job:
 
 \begin{figure}[H]
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick,initial text=$ 	$]
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick,initial text=$ 	$, scale=0.9]
 	\tikzset{every state/.style={minimum size=0pt}}
 	\node[state, initial, initial where=left] (0) at (2.47,1.47) {$0$};
 	\node[state] (1) at (4.26,2.08) {$1$};
@@ -1500,14 +1566,22 @@ However, on some pictures, the curvature is necessary to maintain clarity in the
 This could one of the possible improvements of the function $f$. 
 
 \chapter{Conclusion}
+The goals of this project were:
+\begin{itemize}
+	\item To finish implementation of regular expressions in JAutomata library
+	\item To create a language, that could be used to define/work with regular automata
+	\item To implement a live-console interpreter for this language
+	\item To implement a mechanism for creation of dot code for drawing state diagrams of regular automata
+	\item To implement a mechanism for conversion of attributed dot code to TikZ code.
+\end{itemize}
 
-What to write here?!
-Lorep ipsum \cite{doe}
+All of these goals have been reached. Some areas might be improved in the future (see chapter \ref{todo}), but the application fulfills all set goals at the moment. Newer versions of the application code are accessible in the project github repository \cite{repo}. 
 
+On the appended CD there is the project root directory and the pom.xml file, which allows for easy compilation of the project (as described in section \ref{compile}) and a pre-compiled .jar file of the project. 
 
 
 \begin{thebibliography}{1}
-	\bibitem{demlova} Marie Demlová. \emph{Jazyky, automaty a gramatiky.} Materials for CTU course Jazyky, Automaty a Gramatiky, 2017. \url{http://math.feld.cvut.cz/demlova/teaching/jag/jag7dohromady.pdf} 
+	\bibitem{demlova} Marie Demlova. \emph{Jazyky, automaty a gramatiky.} Materials for CTU course Jazyky, Automaty a Gramatiky, 2017. \url{http://math.feld.cvut.cz/demlova/teaching/jag/jag7dohromady.pdf} 
 	\bibitem{hopcroft} John E. Hopcroft, Jeffrey D. Ullman. \emph{Formal Languages and Their Relation to Automata}. Addison-Wesley Pub. Co., 1969. 
 	\bibitem{graphviz} Graphviz official website. \url{https://www.graphviz.org/}.
 	\bibitem{graphviz-java} Graphviz-java official repository. \url{https://github.com/nidi3/graphviz-java}
@@ -1524,7 +1598,12 @@ Lorep ipsum \cite{doe}
 	
 	\bibitem{tex} \TeX Users Group website. \url{http://tug.org/}
 	
-	%This is a bit cheeky
+	\bibitem{repo} The official repository for JAutomata library and JASL projects \url{https://github.com/Horovtom/jAutomata}
+
+	\bibitem{maven} The official website of Apache Maven \url{https://maven.apache.org/}	
+	
+	\bibitem{jdk} JDK8 download page \url{https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html}
+	
 	\bibitem{school-notes} Tomas Horovsky. Notes for the A4B01JAG CVUT course \url{https://github.com/Horovtom/SchoolNotes/blob/master/A4B01JAG/A4B01JAG.pdf}
 	
 	\bibitem{simplifying-regex} H. Gruber, S. Gulan. \emph{Simplifying Regular Expressions
@@ -1589,10 +1668,9 @@ digraph automaton {
 \end{tikzpicture}
 \end{lstlisting}
 \end{minipage}
-%\bibliographystyle{amsalpha}
-%\bibliography{bpp}
 
-
+%TODO ADD FOR UPLOAD
+%\ctutemplate{specification.as.chapter}
 
 \end{document}
 
